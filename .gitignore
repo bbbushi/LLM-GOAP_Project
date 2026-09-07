@@ -57,4 +57,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
 # Temporary auto-generated Android Assets
+# (see below for Claude Code personal settings)
+
+# Claude Code personal local settings (skills under .claude/skills/ ARE tracked)
+.claude/settings.local.json
 /[Aa]ssets/[Aa]ssetsPlugins/**/[Ss]treamingAssets/aa/*
