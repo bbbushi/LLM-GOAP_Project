@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "vibe Project.sln"
+    "dotnet.defaultSolution": "LLM-GOAP_Project.sln"
 }
