@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-M1（GOAP 内核）动工前：核心接口与 World State JSON Schema 尚未定义，`Assets/script/` 仅有模板占位 `Test.cs`。协作基础设施已就绪：公共约束文档（`Docs/AGENT_COMMON.md`）、/checkpoint 检查点、每日开发日志自动化（`Scripts/devlog/`）、共享远程（origin = GitHub，产生提交后即 push）。
+M1（GOAP 内核）动工前：核心接口与 World State JSON Schema 尚未定义，`Assets/script/` 仅有模板占位 `Test.cs`。协作基础设施已就绪：项目 README（门面与文档地图）、公共约束文档（`Docs/AGENT_COMMON.md`）、/checkpoint 检查点、每日开发日志自动化（`Scripts/devlog/`）、共享远程（origin = GitHub，产生提交后即 push）。
 
 ## 进行中
 
