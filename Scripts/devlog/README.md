@@ -29,7 +29,7 @@ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.vibeproject.devlog.p
 # 开关（本机生效，重启保持；关闭时 launchd 到点直接跳过，不产生任何调用）
 Scripts/devlog/devlog.sh off      # 关闭：生成 Scripts/devlog/.disabled（已 gitignore）
 Scripts/devlog/devlog.sh on       # 开启：删除标志文件
-Scripts/devlog/devlog.sh status   # 查看开关/今日日志/launchd 装载状态
+Scripts/devlog/devlog.sh status   # 查看开关/今日日志/launchd 装载状态/上次运行结果
 
 # 手动补跑今天的日志（已存在时用 --force 重写并再提交一次；--force 无视开关）
 Scripts/devlog/devlog.sh --force
@@ -52,6 +52,8 @@ cat /tmp/vibeproject-devlog-launchd.err            # launchd 层错误
 
 - 写日志的 agent 只有只读工具 + Write，且提示词规定**只能创建当天日志这一个文件**；提交由脚本用 `git commit -- <日志路径>` pathspec 完成，**永不裹挟工作区其他变更**。
 - 幂等：当天日志已存在则直接跳过，不会重复提交。
+- 无变更日跳过：上个日志点之后没有新提交且工作区干净 → 不调用模型、不生成文件、不提交（`--force` 可强制）。
+- 结果留痕：每次运行以 `RESULT: OK / FAILED / skipped …` 写入运行日志；`status` 直接显示上次运行结果，断更不会无声发生。
 - 开关用标志文件（`Scripts/devlog/.disabled`，gitignore）：`off` 只是让脚本到点跳过，launchd 任务保持装载，因此开关状态重启后依然生效；想彻底移除任务用下文"卸载"。
 - claude 调用失败 → 不写文件、不提交、日志留痕（`~/Library/Logs/vibe-project-devlog.log`），第二天照常。
 - 本机制属于项目协作工作流，概览见 `Docs/AGENT_COMMON.md` §5。

@@ -42,7 +42,7 @@
 - **工作开始前读、结束前更新 `HANDOFF.md`**（当前状态/进行中/已决策/下一步四个板块）；
 - 重大设计决策落 `Docs/DESIGN.md`，不留在对话里。
 
-**检查点工作流**：一段工作结束 = 更新 HANDOFF.md + git 提交（文档与代码同一提交），完整流程定义于 `.claude/skills/checkpoint/SKILL.md`。Claude Code 用 `/checkpoint` 触发；**其他平台的 agent 阅读同一文档、手动执行同一流程**。远程仓库未配置前只做本地 commit，不 push。
+**检查点工作流**：一段工作结束 = 更新 HANDOFF.md + git 提交（文档与代码同一提交），完整流程定义于 `.claude/skills/checkpoint/SKILL.md`。Claude Code 用 `/checkpoint` 触发；**其他平台的 agent 阅读同一文档、手动执行同一流程**。产生新提交后即 `git push`（origin 见 §7）；push 失败不阻塞本地检查点，恢复后补推。
 
 **每日开发日志**：系统每晚自动用 glm-5.3-flash 无头扫描仓库，生成 `Docs/devlog/YYYY-MM-DD.md` 并单独提交（`devlog: 日期`）。日志是**编年史**，HANDOFF.md 是**工作内存**，两者互补。本机开关：`Scripts/devlog/devlog.sh on|off|status`。机制、安装与约束见 `Scripts/devlog/README.md`。
 
@@ -72,7 +72,9 @@
   /Applications/Unity/Hub/Editor/2022.3.15f1c1/Unity.app/Contents/MacOS/Unity \
     -projectPath "<项目路径>" -runTests -testPlatform EditMode -testResults results.xml -batchmode
   ```
-- 无 lint/CI。本地 git 仓库已初始化（`.gitignore`/`.gitattributes` 为 Unity 标准模板，YAML 资产走 UnityYAMLMerge）；**尚未配置共享远程仓库**——双人接力协作需要双方都能推送（GitHub/Gitee 私有仓库），这是待办事项。
+- 无 lint/CI。本地 git 仓库已初始化（`.gitignore`/`.gitattributes` 为 Unity 标准模板，YAML 资产走 UnityYAMLMerge）。
+- **共享远程**：`origin` = `github.com/bbbushi/LLM-GOAP_Project`（私有）。约定：产生新提交后即 push；push 失败不阻塞本地工作。
+- **工具脚本**：`Scripts/devlog/`——每日开发日志自动化（开关、安装、约束见其 README）。新增运维类脚本放 `Scripts/<名称>/`，并在此处登记一行。
 
 ## 8. 工程约定
 

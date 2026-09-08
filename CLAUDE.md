@@ -10,7 +10,7 @@ Claude Code 的入口文件。项目约束与工作流的单一事实源在 `Doc
 - `Docs/DESIGN.md` —— 权威设计文档
 - `HANDOFF.md` —— 当前进度（接手先读，收尾更新）
 
-## 红线（完整版见 AGENT_COMMON.md §3/§4）
+## 红线（完整版见 AGENT_COMMON.md §3/§4；修改红线须两处同步）
 
 1. LLM 只产结构化 JSON，**永不直接修改游戏状态、永不生成代码**。
 2. **GOAP 引擎是唯一的状态修改者**。
