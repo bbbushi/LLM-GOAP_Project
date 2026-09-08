@@ -44,7 +44,7 @@
 
 **检查点工作流**：一段工作结束 = 更新 HANDOFF.md + git 提交（文档与代码同一提交），完整流程定义于 `.claude/skills/checkpoint/SKILL.md`。Claude Code 用 `/checkpoint` 触发；**其他平台的 agent 阅读同一文档、手动执行同一流程**。远程仓库未配置前只做本地 commit，不 push。
 
-**每日开发日志**：系统每晚自动用 glm-5.3-flash 无头扫描仓库，生成 `Docs/devlog/YYYY-MM-DD.md` 并单独提交（`devlog: 日期`）。日志是**编年史**，HANDOFF.md 是**工作内存**，两者互补。机制、安装与约束见 `Scripts/devlog/README.md`。
+**每日开发日志**：系统每晚自动用 glm-5.3-flash 无头扫描仓库，生成 `Docs/devlog/YYYY-MM-DD.md` 并单独提交（`devlog: 日期`）。日志是**编年史**，HANDOFF.md 是**工作内存**，两者互补。本机开关：`Scripts/devlog/devlog.sh on|off|status`。机制、安装与约束见 `Scripts/devlog/README.md`。
 
 ## 6. 模型路由约束（所有工作者必守）
 

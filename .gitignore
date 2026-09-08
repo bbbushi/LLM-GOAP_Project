@@ -62,3 +62,6 @@ crashlytics-build.properties
 # Claude Code personal local settings (skills under .claude/skills/ ARE tracked)
 .claude/settings.local.json
 /[Aa]ssets/[Aa]ssetsPlugins/**/[Ss]treamingAssets/aa/*
+
+# 每日开发日志的本机开关标志（Scripts/devlog/devlog.sh off 生成，不入库）
+Scripts/devlog/.disabled

@@ -1,7 +1,8 @@
 #!/bin/bash
 # 每日开发日志：系统定时（launchd）每晚调用，用 glm-5.3-flash 无头扫描仓库，
 # 生成 Docs/devlog/YYYY-MM-DD.md 并单独提交（消息 "devlog: 日期"）。
-# 安装/改时间/卸载见同目录 README.md。人工补跑：Scripts/devlog/devlog.sh --force
+# 开关：Scripts/devlog/devlog.sh on|off|status（本机生效，重启保持）
+# 安装/改时间/卸载见同目录 README.md。人工补跑：devlog.sh --force（无视开关与当日幂等检查）
 
 set -euo pipefail
 
@@ -14,16 +15,38 @@ TODAY="$(date +%F)"
 DEVLOG_DIR="$PROJECT_DIR/Docs/devlog"
 TARGET="$DEVLOG_DIR/$TODAY.md"
 LOG_FILE="$HOME/Library/Logs/vibe-project-devlog.log"
+FLAG_FILE="$SCRIPT_DIR/.disabled"   # 开关标志（已 gitignore，本机状态不入库）
 
 log() { echo "[$(date '+%F %T')] $*" >> "$LOG_FILE"; }
 
-log "==== devlog run start (${1:-scheduled}) ===="
+# ---- 开关管理（on/off/status 不走扫描流程）----
+case "${1:-}" in
+  on)  rm -f "$FLAG_FILE"; echo "每日开发日志：已开启"; exit 0 ;;
+  off) touch "$FLAG_FILE"; echo "每日开发日志：已关闭（launchd 到点直接跳过，不产生任何调用）"; exit 0 ;;
+  status)
+    if [ -f "$FLAG_FILE" ]; then echo "开关：关闭"; else echo "开关：开启"; fi
+    if [ -f "$TARGET" ]; then echo "今日日志：已存在"; else echo "今日日志：未生成"; fi
+    if launchctl print "gui/$(id -u)/com.vibeproject.devlog" >/dev/null 2>&1; then
+      echo "launchd 任务：已装载（计划每晚 21:40）"
+    else
+      echo "launchd 任务：未装载（安装见 README.md）"
+    fi
+    exit 0 ;;
+esac
 
 # 外置卷未挂载/项目不在时静默跳过，不报错打扰系统
 if [ ! -d "$PROJECT_DIR/.git" ]; then
-  log "project dir not found (volume unmounted?), skip"
+  log "==== devlog run skipped: project dir not found (volume unmounted?) ===="
   exit 0
 fi
+
+# 开关关闭则直接跳过（--force 为人工显式补跑，无视开关）
+if [ -f "$FLAG_FILE" ] && [ "${1:-}" != "--force" ]; then
+  log "==== devlog run skipped: disabled by flag file ===="
+  exit 0
+fi
+
+log "==== devlog run start (${1:-scheduled}) ===="
 
 # 幂等：今日日志已存在则跳过；--force 可重跑（会重写并再提交一次）
 if [ -f "$TARGET" ] && [ "${1:-}" != "--force" ]; then
