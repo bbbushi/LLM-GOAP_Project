@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.vibeproject.devlog</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<!-- 本机绝对路径（含空格），换机器需同步修改 -->
+		<string>/Volumes/workspace 1/UnityProject/vibe Project/Scripts/devlog/devlog.sh</string>
+	</array>
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Hour</key>
+		<integer>21</integer>
+		<key>Minute</key>
+		<integer>40</integer>
+	</dict>
+	<key>StandardOutPath</key>
+	<string>/tmp/vibeproject-devlog-launchd.out</string>
+	<key>StandardErrorPath</key>
+	<string>/tmp/vibeproject-devlog-launchd.err</string>
+</dict>
+</plist>
