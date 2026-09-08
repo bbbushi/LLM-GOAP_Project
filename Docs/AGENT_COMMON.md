@@ -56,6 +56,8 @@
 | 架构设计、技术决策、`Docs/DESIGN.md` 级方案文档 | **glm-5.3**（完整版，非 Flash） |
 | 测试编写、说明文档、git 提交/交接等文书工作 | **glm-5.3-flash**（默认） |
 
+> 注：表中要求 glm-5.3 的任务，**glm-5.2 亦可替代**（同等可用）；Flash 版与完整版不互相替代。
+
 执行规则：
 
 1. 当前运行的模型标识见当前平台标示的位置（Claude Code 在系统提示中，形如 "You are powered by the model glm-5.3-flash"）。开工前先对照上表自查。

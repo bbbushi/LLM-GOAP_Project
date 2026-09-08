@@ -14,6 +14,7 @@ M1（GOAP 内核）动工前：核心接口与 World State JSON Schema 尚未定
 
 ## 已决策
 
+- **模型路由补充：glm-5.2 可替代 glm-5.3**（2026-09-08）：表中要求 glm-5.3 的任务（架构设计、技术决策等）用 glm-5.2 接手同样算匹配，无需停下确认；Flash 版与完整版仍不互相替代。落点：`Docs/AGENT_COMMON.md` §6 路由表下方注释。
 - **产生提交后即 push**（2026-09-08）：origin（github.com/bbbushi/LLM-GOAP_Project，私有，曾用名 LLM-GOA_Project）可推送，取代早期"远程未配置、只做本地提交"的设定；push 失败不阻塞本地检查点。项目此前仅存于本机外置卷，push 同时消除单点丢失风险。
 - **约束/工作流剥离为 `Docs/AGENT_COMMON.md` 单一事实源**（2026-09-08）：多平台 agent 接力协作，各平台入口文件只写指针 + 极简红线，禁止复制内容，防文档分叉；CLAUDE.md 已瘦身为接入范例（含"模型切换提示必须中文"规则）。
 - **每日开发日志自动化**（2026-09-08）：launchd 每晚 21:40 用 glm-5.3-flash 无头扫描仓库，生成 `Docs/devlog/YYYY-MM-DD.md`（编年史）并单独提交 `devlog: 日期`，与 HANDOFF.md（工作内存）互补；含本机 `on|off|status` 开关（off=标志文件跳过，不卸载任务，每机自管不入库）。无变更日自动跳过；每次运行以 `RESULT:` 留痕，`status` 可查上次结果。机制与安装见 `Scripts/devlog/README.md`，概览见 AGENT_COMMON.md §5。
