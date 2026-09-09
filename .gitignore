@@ -65,3 +65,4 @@ crashlytics-build.properties
 
 # 每日开发日志的本机开关标志（Scripts/devlog/devlog.sh off 生成，不入库）
 Scripts/devlog/.disabled
+mono_crash.12c9952a40.0.json
