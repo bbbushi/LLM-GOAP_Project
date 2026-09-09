@@ -14,6 +14,7 @@ M1（GOAP 内核）动工前：核心接口与 World State JSON Schema 尚未定
 
 ## 已决策
 
+- **表现层 UI 选型：UI Toolkit**（2026-09-09）：本项目 UI 全为可观测性面板（行为日志/资源曲线/决策面板/指令输入），UI Toolkit 是该场景的设计目标（ListView 虚拟化、无 Canvas Rebuild）；UXML/USS 纯文本资产可 diff、可由 AI agent 可靠生成，契合接力协作。UGUI 仅在世界空间 UI 等 Toolkit 覆盖不到处局部引入（两者可共存）。完整理由与代价兜底见 `Docs/DESIGN.md` §4.1/§4.3。
 - **模型路由补充：glm-5.2 可替代 glm-5.3**（2026-09-08）：表中要求 glm-5.3 的任务（架构设计、技术决策等）用 glm-5.2 接手同样算匹配，无需停下确认；Flash 版与完整版仍不互相替代。落点：`Docs/AGENT_COMMON.md` §6 路由表下方注释。
 - **产生提交后即 push**（2026-09-08）：origin（github.com/bbbushi/LLM-GOAP_Project，私有，曾用名 LLM-GOA_Project）可推送，取代早期"远程未配置、只做本地提交"的设定；push 失败不阻塞本地检查点。项目此前仅存于本机外置卷，push 同时消除单点丢失风险。
 - **约束/工作流剥离为 `Docs/AGENT_COMMON.md` 单一事实源**（2026-09-08）：多平台 agent 接力协作，各平台入口文件只写指针 + 极简红线，禁止复制内容，防文档分叉；CLAUDE.md 已瘦身为接入范例（含"模型切换提示必须中文"规则）。
