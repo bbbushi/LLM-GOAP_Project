@@ -8,7 +8,7 @@ M1（GOAP 内核）前两张任务卡完成：① 六大核心接口与 World St
 
 ## 进行中
 
-- 待办（非阻塞）：聚焦一次 Unity 编辑器让它刷新资产——为 WorldState.cs 与 Tests/ 生成 `.meta` 后补提交；建议顺手在 Test Runner（EditMode）跑一遍 Vibe.Core.Tests 留档。
+- （可选留档，非阻塞）在 Unity Test Runner（EditMode）跑一遍 Vibe.Core.Tests——headless mono 反射跑器已验证 32/32 全绿、`Vibe.Core.Tests.dll` 已经编辑器编译通过，此步仅为正式化记录。
 
 注意：每日日志的定时任务装在本机 `~/Library/LaunchAgents/`（不入库）；新机器协作需按 `Scripts/devlog/README.md` 安装。
 
@@ -27,9 +27,8 @@ M1（GOAP 内核）前两张任务卡完成：① 六大核心接口与 World St
 
 ## 下一步
 
-1. 聚焦一次 Unity 编辑器：刷新生成 `.meta` 并补提交；Test Runner 跑一遍 EditMode 测试留档（见"进行中"）。
-2. M1 后续任务卡（按序推进，粒度可再拆）：
+1. M1 后续任务卡（按序推进，粒度可再拆）：
    - ② Action/Goal 的 JSON 配置 Schema（`Docs/schemas/`）与加载器；
    - ③ A* Planner 正式实现（二叉堆优先队列 + 签名去重 + 迭代/深度预算）+ 单测；
    - ④ tick 循环与资源结算：1 NPC、3 Action、2 Goal 自主生存 24 游戏小时（M1 验收）。
-3. 【TODO，2026-09-08】MCP 使用纳管：默认禁止 MCP（Unity 编辑器桥接），仅当任务需要直接操作 Unity 编辑器（跑 PlayMode 测试、读 Console、执行编辑器命令）时经用户确认临时开放，用完即关。设想：禁令落在"注册层"——不注册服务器 = MCP 工具不存在，对所有 agent（交互会话/headless/其他平台）天然禁止；做成 `Scripts/` 下 `on|off|status` 开关（同 devlog 模式，local scope 每机自管）。现状：无任何已注册 MCP 服务器、`.mcp.json` 不存在；`com.coplaydev.unity-mcp` 已内嵌入库（见已决策 2026-09-09），编辑器插件随处可用。实现前置（原 manifest 本机路径问题）已解决。注：每日 devlog 自动化的 `--allowedTools` 白名单不含 mcp__ 工具，自动化天然免疫，无需处理。
+2. 【TODO，2026-09-08】MCP 使用纳管：默认禁止 MCP（Unity 编辑器桥接），仅当任务需要直接操作 Unity 编辑器（跑 PlayMode 测试、读 Console、执行编辑器命令）时经用户确认临时开放，用完即关。设想：禁令落在"注册层"——不注册服务器 = MCP 工具不存在，对所有 agent（交互会话/headless/其他平台）天然禁止；做成 `Scripts/` 下 `on|off|status` 开关（同 devlog 模式，local scope 每机自管）。现状：无任何已注册 MCP 服务器、`.mcp.json` 不存在；`com.coplaydev.unity-mcp` 已内嵌入库（见已决策 2026-09-09），编辑器插件随处可用。实现前置（原 manifest 本机路径问题）已解决。注：每日 devlog 自动化的 `--allowedTools` 白名单不含 mcp__ 工具，自动化天然免疫，无需处理。
