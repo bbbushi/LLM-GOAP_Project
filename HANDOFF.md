@@ -4,11 +4,11 @@
 
 ## 当前状态
 
-M1（GOAP 内核）第一张任务卡完成：六大核心接口（IAction / IGoal / IWorldState / IPlanner / IRuleProvider / ILLMProvider）与 World State JSON Schema v1 已定义冻结。代码位于 `Assets/script/Core/Contracts/`，程序集 `Vibe.Core`（asmdef `noEngineReferences: true`——纯 C#、编译层面禁止引用 UnityEngine，落实 headless 铁律）；Schema 位于 `Docs/schemas/world-state.schema.json`（附 `examples/` 示例）。语义基线沿用 `Docs/GOAP.md`（缺失键视为 0、前提 ≥、效果 +=），算子做了受控泛化（见已决策 2026-09-09）。`Assets/script/Test.cs` 仍为模板占位。协作基础设施已就绪：项目 README、`Docs/AGENT_COMMON.md`、/checkpoint 检查点、每日开发日志（`Scripts/devlog/`）、共享远程（origin = GitHub，产生提交后即 push）。
+M1（GOAP 内核）前两张任务卡完成：① 六大核心接口与 World State JSON Schema v1 已冻结，且经 Unity 编辑器实际编译验证（Vibe.Core.dll 正常产出、无 error CS）；② WorldState 默认实现完成（`Assets/script/Core/WorldState.cs`），32 项契约单测全绿（`Assets/script/Tests/Editor/`，asmdef `Vibe.Core.Tests`；以 headless mono 反射跑器验证——mcs 编译 + PackageCache 的 nunit 引用，正式留档仍以 Unity Test Runner 为准）。语义基线沿用 `Docs/GOAP.md`（缺失键视为 0、前提 ≥、效果 +=），算子受控泛化（见已决策 2026-09-09）。`Assets/script/Test.cs` 仍为模板占位。协作基础设施已就绪：项目 README、`Docs/AGENT_COMMON.md`、/checkpoint 检查点、每日开发日志（`Scripts/devlog/`）、共享远程（origin = GitHub，产生提交后即 push）。
 
 ## 进行中
 
-- 待验证：用 Unity 打开工程，确认 Vibe.Core 编译通过、生成 `.meta` 后补提交推送（本次提交尚未含 .meta，Unity 打开时会自动生成）。
+- 待办（非阻塞）：聚焦一次 Unity 编辑器让它刷新资产——为 WorldState.cs 与 Tests/ 生成 `.meta` 后补提交；建议顺手在 Test Runner（EditMode）跑一遍 Vibe.Core.Tests 留档。
 
 注意：每日日志的定时任务装在本机 `~/Library/LaunchAgents/`（不入库）；新机器协作需按 `Scripts/devlog/README.md` 安装。
 
@@ -27,9 +27,8 @@ M1（GOAP 内核）第一张任务卡完成：六大核心接口（IAction / IGo
 
 ## 下一步
 
-1. 用 Unity 打开工程：验证 Vibe.Core 编译、生成 `.meta`，补提交推送（见"进行中"）。
+1. 聚焦一次 Unity 编辑器：刷新生成 `.meta` 并补提交；Test Runner 跑一遍 EditMode 测试留档（见"进行中"）。
 2. M1 后续任务卡（按序推进，粒度可再拆）：
-   - ① WorldState 默认实现（Get/Set/Meets/Apply/Clone/Fingerprint）+ EditMode 单测；
    - ② Action/Goal 的 JSON 配置 Schema（`Docs/schemas/`）与加载器；
    - ③ A* Planner 正式实现（二叉堆优先队列 + 签名去重 + 迭代/深度预算）+ 单测；
    - ④ tick 循环与资源结算：1 NPC、3 Action、2 Goal 自主生存 24 游戏小时（M1 验收）。
