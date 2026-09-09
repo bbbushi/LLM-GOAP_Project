@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bbbushi/LLM-GOAP_Project/Docs/schemas/world-state.schema.json",
+  "title": "WorldState",
+  "description": "GOAP 世界状态快照（权威契约 v1，冻结于 M1，2026-09-09）。数值语义：缺失的键视为 0；前提条件判断以 ≥ 为基线、行动效果以 += 为基线（算子全集见 Assets/script/Core/Contracts/）。键命名空间约定：共享资源用裸键（food / power / wood / population …），NPC 个体状态用前缀 npc.<id>.<key>（如 npc.n1.hunger）。天气等外部效果不入世界状态——只经规则通道（行动成本/生产/消耗倍率）生效。修改本契约须升 version 并同步 Docs/DESIGN.md。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "tick", "day", "values"],
+  "properties": {
+    "version": {
+      "const": 1,
+      "description": "契约版本号；与本 Schema 的冻结版本绑定。"
+    },
+    "tick": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "模拟 tick 数（内核最小时间步，从 0 起）。"
+    },
+    "day": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "游戏日（从 1 起；日边界触发 LLM 层调度）。"
+    },
+    "values": {
+      "type": "object",
+      "description": "键值对集合；值为数值（整数或浮点均可）。缺失的键视为 0。键名采用点分命名空间：资源裸键、NPC 用 npc.<id>.<key> 前缀。",
+      "additionalProperties": { "type": "number" }
+    }
+  }
+}

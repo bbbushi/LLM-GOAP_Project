@@ -80,7 +80,8 @@
 
 ## 8. 工程约定
 
-- 脚本目录：`Assets/script/`（沿用现有命名）。
+- 脚本目录：`Assets/script/`（沿用现有命名）；模拟内核程序集 `Vibe.Core`（`Assets/script/Core/`，纯 C#，`noEngineReferences`，禁引 UnityEngine）。
+- 契约 Schema（World State 等冻结契约的 JSON Schema，单一事实源）：`Docs/schemas/`。
 - 设计决策变更时同步更新 `Docs/DESIGN.md` 版本号与对应章节。
 
 ## 9. 新平台接入指引

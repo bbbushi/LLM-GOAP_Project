@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "tick": 96,
+  "day": 2,
+  "values": {
+    "food": 7.5,
+    "power": 12,
+    "wood": 0,
+    "population": 1,
+    "npc.n1.hunger": 0.35,
+    "npc.n1.energy": 0.8,
+    "npc.n1.at_forest": 1,
+    "npc.n1.at_home": 0
+  }
+}
