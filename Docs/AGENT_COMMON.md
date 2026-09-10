@@ -29,7 +29,7 @@
 ## 4. 架构硬约束（源自实验性定位，见 DESIGN.md §4.5）
 
 - **数据驱动**：Action、Goal、规则、NPC 人格、每日世界脚本全部是 JSON 配置；新增内容不改引擎代码。
-- **面向接口**：`IAction / IGoal / IWorldState / IPlanner / IRuleProvider / ILLMProvider`，实现可替换。
+- **面向接口**：`IAction / IGoal / IWorldState / IPlanner / IRuleProvider / ILLMProvider`（另有随 IRuleProvider 冻结的伴生接口 `IRuleSet`），实现可替换。
 - **headless 内核是一等公民**：模拟内核必须可脱离 Unity 渲染独立运行与测试；Unity 界面只是可插拔前端。
 - **可观测性优先**：事件总线 + 全量行为日志，每次规划/规则变更/LLM 调用都留痕。
 - **可复现**：固定随机种子 + 记录并缓存全部 LLM 请求/响应。
@@ -46,6 +46,8 @@
 
 **每日开发日志**：系统每晚自动用 glm-5.3-flash 无头扫描仓库，生成 `Docs/devlog/YYYY-MM-DD.md` 并单独提交（`devlog: 日期`）。日志是**编年史**，HANDOFF.md 是**工作内存**，两者互补。本机开关：`Scripts/devlog/devlog.sh on|off|status`。机制、安装与约束见 `Scripts/devlog/README.md`。
 
+**监管小组**：AI 产出的文档与计划（设计文档、交接记录、任务计划、JSON Schema 等）由常设监管小组按需审查——自相矛盾、不合理、红线合规三类检查，**只报告不修改**。触发与流程见 `.claude/skills/supervise/SKILL.md`：Claude Code 用 `/supervise`，其他平台的 agent 阅读同一文档、手动执行同一流程。报告落 `Docs/reviews/`（见 §8），模型档位按审查对象分档（见 §6）。
+
 ## 6. 模型路由约束（所有工作者必守）
 
 本项目由不同大模型接力工作（Claude Code 用 `/model` 切换；其他平台用其自身的模型切换机制）。**接到任务先自查当前模型是否匹配任务类型；不匹配就停下来向用户确认并推荐切换，不要硬做。**
@@ -55,6 +57,7 @@
 | 视觉/UI 工作（拼 UI、布局、UXML/USS、材质贴图、镜头/后处理等） | **GPT-6** |
 | 架构设计、技术决策、`Docs/DESIGN.md` 级方案文档 | **glm-5.3**（完整版，非 Flash） |
 | 测试编写、说明文档、git 提交/交接等文书工作 | **glm-5.3-flash**（默认） |
+| 监管审查（`/supervise`，按对象套上表两档：设计级文档 → glm-5.3；HANDOFF/devlog 等文书 → glm-5.3-flash） | **按对象分档**（见 §5 监管小组） |
 
 > 注：表中要求 glm-5.3 的任务，**glm-5.2 亦可替代**（同等可用）；Flash 版与完整版不互相替代。
 
@@ -83,6 +86,7 @@
 - 脚本目录：`Assets/script/`（沿用现有命名）；模拟内核程序集 `Vibe.Core`（`Assets/script/Core/`，纯 C#，`noEngineReferences`，禁引 UnityEngine）。
 - 契约 Schema（World State 等冻结契约的 JSON Schema，单一事实源）：`Docs/schemas/`。
 - 设计决策变更时同步更新 `Docs/DESIGN.md` 版本号与对应章节。
+- 审查报告（监管小组产出，统一存放处）：`Docs/reviews/`，命名 `YYYY-MM-DD-<slug>.md`。
 
 ## 9. 新平台接入指引
 

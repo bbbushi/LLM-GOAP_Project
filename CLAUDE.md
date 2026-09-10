@@ -21,3 +21,4 @@ Claude Code 的入口文件。项目约束与工作流的单一事实源在 `Doc
 
 - `/model` 切换模型（任务→模型路由表见 AGENT_COMMON.md §6；模型切换相关提示必须用中文）。
 - `/checkpoint` 检查点工作流（skill 位于 `.claude/skills/checkpoint/`）：一段工作结束 = 更新 HANDOFF.md + git 提交。
+- `/supervise` 监管小组（skill 位于 `.claude/skills/supervise/`）：按需审查 AI 产出的文档与计划是否自相矛盾、不合理或违反红线；只报告不修改。

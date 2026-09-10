@@ -51,8 +51,6 @@
 2. 编译：编辑器打开工程即自动编译（Assembly-CSharp）。
 3. 测试：编辑器 Window → General → Test Runner 运行 EditMode/PlayMode 测试（CLI 命令见 `Docs/AGENT_COMMON.md` §7）。
 
-> 已知问题：`Packages/manifest.json` 含 `file:D:/...` 形式的本机绝对路径（处理计划见 `HANDOFF.md`），其他机器打开可能报包解析错误，修复前可忽略或本地删改。
-
 ## 仓库结构
 
 ```
