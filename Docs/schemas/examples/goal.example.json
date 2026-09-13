@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "goals": [
+    {
+      "id": "stay_fed",
+      "priority": 10,
+      "conditions": [
+        { "key": "food", "threshold": 2 }
+      ]
+    },
+    {
+      "id": "stock_wood",
+      "priority": 5,
+      "conditions": [
+        { "key": "wood", "threshold": 3 }
+      ]
+    }
+  ]
+}

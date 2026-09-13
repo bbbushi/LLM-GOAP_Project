@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bbbushi/LLM-GOAP_Project/Docs/schemas/goal.schema.json",
+  "title": "GoalSet",
+  "description": "GOAP 目标配置集（权威契约 v1，冻结于 M1）。一个配置文件 = 一份目标库：顶层 {version, goals:[…]}。目标是 NPC 想让世界满足的一组条件 + 优先级（GOAP.md §2.3），纯数据。conditions[].op 缺省为 GreaterOrEqual（≥ 基线），与 action.schema.json 的 condition 定义一致。键命名空间同 world-state.schema.json。id 在库内必须唯一（由加载器强制报错）。修改本契约须升 version 并同步 Docs/DESIGN.md。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "goals"],
+  "properties": {
+    "version": {
+      "const": 1,
+      "description": "契约版本号；与本 Schema 的冻结版本绑定。"
+    },
+    "goals": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "目标条目列表（完全相同的重复条目视为配置错误）。",
+      "items": { "$ref": "#/$defs/goal" }
+    }
+  },
+  "$defs": {
+    "goal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "priority", "conditions"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "稳定标识（行为日志与可观测性以此留痕）。"
+        },
+        "priority": {
+          "type": "number",
+          "description": "优先级，越大越先尝试；多目标并存时按降序逐一规划（IPlanner）。可为负（排在默认 0 之后）。"
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "description": "目标条件；全部满足即视为该目标达成。空条件的目标恒达成，无意义，故至少一条。",
+          "items": { "$ref": "#/$defs/condition" }
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "threshold"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "世界状态键（比较前缺失键取 0）。"
+        },
+        "op": {
+          "enum": ["GreaterOrEqual", "Greater", "Equal", "Less", "LessOrEqual", "NotEqual"],
+          "description": "比较算子，与 ConditionOp 枚举名一致。缺省 GreaterOrEqual（≥ 基线）。"
+        },
+        "threshold": {
+          "type": "number",
+          "description": "阈值（key 与之比较）。"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bbbushi/LLM-GOAP_Project/Docs/schemas/action.schema.json",
+  "title": "ActionSet",
+  "description": "GOAP 行动配置集（权威契约 v1，冻结于 M1）。一个配置文件 = 一份行动库：顶层 {version, actions:[…]}。行动是纯数据 = 前提 + 效果 + 基础代价（DESIGN.md §4.5、GOAP.md §2.2），LLM 可生成/调整行动配置，但配置中不含任何逻辑。算子字符串与 Assets/script/Core/Contracts/ 的 ConditionOp/EffectOp 枚举名逐一对应；preconditions[].op 缺省为 GreaterOrEqual（≥ 基线），effects[].op 缺省为 Add（+= 基线），缺省由加载器实现。键命名空间同 world-state.schema.json（共享资源裸键、NPC 个体键 npc.<id>.<key>）；单 NPC 规划时的键投影/代入是规划侧（M1 卡④/⑤）的职责，本 Schema 不约束。id 在库内必须唯一（按键唯一无法用 JSON Schema 表达，由加载器强制报错）。修改本契约须升 version 并同步 Docs/DESIGN.md。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "actions"],
+  "properties": {
+    "version": {
+      "const": 1,
+      "description": "契约版本号；与本 Schema 的冻结版本绑定。"
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "行动条目列表（完全相同的重复条目视为配置错误）。",
+      "items": { "$ref": "#/$defs/action" }
+    }
+  },
+  "$defs": {
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "baseCost", "preconditions", "effects"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "稳定标识；规则层的行动成本乘数以此索引（IRuleSet.ActionCostMultipliers）。"
+        },
+        "baseCost": {
+          "type": "number",
+          "minimum": 0,
+          "description": "基础代价；规划器取有效代价 = baseCost × 规则乘数。0 表示免费行动。"
+        },
+        "preconditions": {
+          "type": "array",
+          "description": "可执行前提；全部满足时该行动才是当前状态下的可行边。空数组 = 无条件可行。",
+          "items": { "$ref": "#/$defs/condition" }
+        },
+        "effects": {
+          "type": "array",
+          "description": "执行效果；行动完成时由 GOAP 引擎按算子应用到世界状态。",
+          "items": { "$ref": "#/$defs/effect" }
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "threshold"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "世界状态键（比较前缺失键取 0）。"
+        },
+        "op": {
+          "enum": ["GreaterOrEqual", "Greater", "Equal", "Less", "LessOrEqual", "NotEqual"],
+          "description": "比较算子，与 ConditionOp 枚举名一致。缺省 GreaterOrEqual（≥ 基线）。Equal 用于 0/1 旗标，勿对连续量做浮点直等。"
+        },
+        "threshold": {
+          "type": "number",
+          "description": "阈值（key 与之比较）。"
+        }
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "amount"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "世界状态键（缺失键视为 0 后再应用算子）。"
+        },
+        "op": {
+          "enum": ["Add", "Set", "MultiplyBy"],
+          "description": "效果算子，与 EffectOp 枚举名一致。缺省 Add（+= 基线，负数即消耗）；MultiplyBy 对缺失键保持缺失（读取即 0）。"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Add 的增量 / Set 的目标值 / MultiplyBy 的乘数。"
+        }
+      }
+    }
+  }
+}
