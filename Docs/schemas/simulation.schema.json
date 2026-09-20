@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bbbushi/LLM-GOAP_Project/Docs/schemas/simulation.schema.json",
+  "title": "SimulationConfig",
+  "description": "模拟运行配置（权威契约 v1，冻结于 M1 卡⑤，2026-09-20）。一份运行配置 = tick 与游戏时间的换算 + 每 tick 被动结算效果 + 参与模拟的 NPC 声明。被动效果是生存压力的来源（如饥饿上升），直接以完整键名（含 npc.<id>. 前缀）作用于世界状态，不经倍率通道（通道只作用于行动效果结算）。agents[].localKeys 声明该 NPC 的个体键清单，驱动键投影：规划时 npc.<id>.<key> 投影为裸键 <key> 供行动/目标条件使用，行动效果写回时裸键 ∈ localKeys 则落回 npc.<id>.<key>（action.schema.json 所述「单 NPC 规划时的键投影/代入是规划侧职责」的落地）。goalIds 引用目标库（goal.schema.json）中的 id，跨文件引用由内核组合时校验。修改本契约须升 version 并同步 Docs/DESIGN.md。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "ticksPerGameHour", "passiveEffects", "agents"],
+  "properties": {
+    "version": {
+      "const": 1,
+      "description": "契约版本号；与本 Schema 的冻结版本绑定。"
+    },
+    "ticksPerGameHour": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "每游戏小时的 tick 数。游戏日 = 24 × 此值；世界状态的时间戳（tick/day）按此换算推进。"
+    },
+    "passiveEffects": {
+      "type": "array",
+      "description": "每 tick 开头直接应用到世界状态的效果（Add 基线，可显式指定算子）。生存压力（饥饿上升等）在此声明，属内容配置而非引擎代码。",
+      "items": { "$ref": "#/$defs/effect" }
+    },
+    "agents": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "参与模拟的 NPC 声明列表（M1 为单 NPC；多 NPC 结构自此就绪，M2 启用）。",
+      "items": { "$ref": "#/$defs/agent" }
+    }
+  },
+  "$defs": {
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "localKeys", "goalIds"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "NPC 标识；世界状态键命名空间 npc.<id>.<key> 中的 <id>。库内唯一（由加载器强制报错）。"
+        },
+        "localKeys": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "该 NPC 的个体键清单（不带 npc.<id>. 前缀的裸键名，如 hunger / at_forest）。用于键投影与效果写回落点；不得含点分前缀（npc. 开头会破坏投影，加载器拒绝）。"
+        },
+        "goalIds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "该 NPC 追求的目标 id 列表（引用目标库）；至少一条。跨文件引用在内核组合时校验存在性。"
+        }
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "amount"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "世界状态键（应为完整键名，含 npc.<id>. 前缀或共享资源裸键）。"
+        },
+        "op": {
+          "enum": ["Add", "Set", "MultiplyBy"],
+          "description": "效果算子，与 EffectOp 枚举名一致。缺省 Add（+= 基线）。"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Add 的增量 / Set 的目标值 / MultiplyBy 的乘数。"
+        }
+      }
+    }
+  }
+}

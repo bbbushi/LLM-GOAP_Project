@@ -203,8 +203,9 @@ namespace Vibe.Core.Tests
         }
 
         [Test]
-        public void Plan_MetHighGoal_WinsOverUnmetLowerGoal()
+        public void Plan_SatisfiedGoal_Skipped_FallsToUnmet()
         {
+            // 已满足的高优先级目标不占调度（防遮蔽）：直接落向未满足的次优先级目标
             var goals = new List<IGoal>
             {
                 new StubGoal("stay_fed", 10f, new[] { WorldCondition.AtLeast("food", 2) }),
@@ -218,8 +219,27 @@ namespace Vibe.Core.Tests
             var plan = new GoapPlanner().Plan(Start(5, 0), goals, library, null);
 
             Assert.IsNotNull(plan);
-            Assert.AreEqual("stay_fed", plan.Goal.Id, "高优先级目标已满足时选中它（空计划），不落向低目标");
+            Assert.AreEqual("stock_wood", plan.Goal.Id, "已满足的 stay_fed 应被跳过");
+            Assert.AreEqual("chop", StepIds(plan));
+        }
+
+        [Test]
+        public void Plan_AllGoalsAlreadyMet_EmptyPlanForTopGoal()
+        {
+            var goals = new List<IGoal>
+            {
+                new StubGoal("stock_wood", 5f, new[] { WorldCondition.AtLeast("wood", 1) }),
+                new StubGoal("stay_fed", 10f, new[] { WorldCondition.AtLeast("food", 2) }),
+            };
+            var library = new List<IAction>(); // 无行动也可满足——起点即终点
+            var world = new WorldState(0, 1, new Dictionary<string, double> { ["food"] = 5, ["wood"] = 1 });
+
+            var plan = new GoapPlanner().Plan(world, goals, library, null);
+
+            Assert.IsNotNull(plan);
             Assert.AreEqual(0, plan.Steps.Count);
+            Assert.AreEqual(0f, plan.TotalCost, 1e-6f);
+            Assert.AreEqual("stay_fed", plan.Goal.Id, "空步计划仍报告最高优先级目标");
         }
 
         [Test]
@@ -268,18 +288,19 @@ namespace Vibe.Core.Tests
         [Test]
         public void Plan_EqualPriorities_TriedInInputOrder()
         {
+            // 两个未满足的平级目标均可规划：按输入序先试第一个
             var goals = new List<IGoal>
             {
                 new StubGoal("first", 5f, new[] { WorldCondition.AtLeast("food", 2) }),
                 new StubGoal("second", 5f, new[] { WorldCondition.AtLeast("wood", 1) }),
             };
-            var start = Start(3, 0); // first 已满足
             var library = new List<IAction>
             {
+                new StubAction("gather", 1f, null, new[] { WorldEffect.Gain("food", 1) }),
                 new StubAction("chop", 2f, null, new[] { WorldEffect.Gain("wood", 1) }),
             };
 
-            var plan = new GoapPlanner().Plan(start, goals, library, null);
+            var plan = new GoapPlanner().Plan(Start(0, 0), goals, library, null);
 
             Assert.AreEqual("first", plan.Goal.Id, "平级目标按输入序先试第一个");
         }

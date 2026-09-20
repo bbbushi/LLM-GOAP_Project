@@ -33,9 +33,10 @@ namespace Vibe.Core.Contracts
     {
         /// <summary>
         /// 从 current 出发，为「优先级最高的可达目标」规划总代价最低的行动序列。
-        /// 目标按 Priority 降序逐一尝试；行动有效代价 = BaseCost × rules 提供的乘数
-        /// （天气等外部影响即经此通道改变计划，DESIGN.md §4.3）。
-        /// 返回 null 表示预算内无可达计划。
+        /// 目标按 Priority 降序逐一尝试，<b>已满足的目标跳过不占调度</b>（防高优先级目标
+        /// 永久遮蔽低优先级目标）；全部满足时返回最高优先级目标的空步计划（TotalCost=0）。
+        /// 行动有效代价 = BaseCost × rules 提供的乘数（天气等外部影响即经此通道改变计划，DESIGN.md §4.3）。
+        /// 返回 null 表示存在未满足目标但预算内均不可达。
         /// </summary>
         Plan Plan(IWorldState current, IReadOnlyList<IGoal> goals, IReadOnlyList<IAction> actions, IRuleProvider rules);
     }

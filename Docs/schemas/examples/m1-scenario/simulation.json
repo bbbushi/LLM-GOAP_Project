@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "ticksPerGameHour": 10,
+  "passiveEffects": [
+    { "key": "npc.n1.hunger", "amount": 1 }
+  ],
+  "agents": [
+    {
+      "id": "n1",
+      "localKeys": ["hunger", "at_forest"],
+      "goalIds": ["stay_alive", "stock_up"]
+    }
+  ]
+}

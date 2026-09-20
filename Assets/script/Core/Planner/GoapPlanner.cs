@@ -15,8 +15,11 @@ namespace Vibe.Core
     ///  - 仅迭代预算 → 迭代预算 + 搜索深度上限双兜底。
     ///
     /// 语义要点：
-    ///  - 目标按 Priority 降序逐一尝试，首个可规划出计划的目标胜出；
-    ///    目标在起点已满足时返回<b>空步计划</b>（TotalCost=0），表示该目标当前无事可做。
+    ///  - 目标选择只在<b>未满足</b>的目标中进行（经典 GOAP 语义，Orkin 2006）：已满足的目标不占调度，
+    ///    直接跳过落向次优先级——否则已满足的高优先级目标会永久遮蔽低优先级目标
+    ///    （如「不饿」满足时压住「囤木柴」，M1 卡⑤场景即因此不可行）。
+    ///  - 全部目标已满足 → 返回最高优先级目标的<b>空步计划</b>（TotalCost=0，无事可做）；
+    ///    存在未满足目标但预算内均不可达 → 返回 null。
     ///  - 预算按「每个目标一次完整搜索」计，不做跨目标分摊——换目标即换问题，旧预算无意义。
     ///  - 确定性：相同输入（含目标/行动列表的元素顺序）产生相同计划（DESIGN.md §4.3 可复现）——
     ///    同优先级目标按输入序尝试，堆内同 F 节点按入堆序弹出。
@@ -51,6 +54,7 @@ namespace Vibe.Core
             if (current == null) throw new ArgumentNullException(nameof(current));
             if (goals == null) throw new ArgumentNullException(nameof(goals));
             if (actions == null) throw new ArgumentNullException(nameof(actions));
+            if (goals.Count == 0) return null; // 无目标 = 无事可规划（与「全满足→空计划」区分：无目标连报告对象都没有）
 
             // 目标按 Priority 降序；平级保持输入序（List.Sort 不稳定，用下标做平级决胜，保证确定性）
             var order = new List<int>(goals.Count);
@@ -61,9 +65,19 @@ namespace Vibe.Core
                 return c != 0 ? c : a.CompareTo(b);
             });
 
+            // 全部满足 → 最高优先级目标的空步计划（无事可做，但仍报告是哪个目标的状态）
+            bool anyUnmet = false;
+            foreach (var goal in goals)
+                if (!current.Meets(goal.Conditions)) { anyUnmet = true; break; }
+            if (!anyUnmet)
+                return new Plan(goals[order[0]], Array.Empty<IAction>(), 0f);
+
+            // 已满足的目标跳过（不占调度），在未满足目标中按优先级取首个可规划出的
             foreach (int index in order)
             {
-                var plan = SearchForGoal(current, goals[index], actions, rules);
+                var goal = goals[index];
+                if (current.Meets(goal.Conditions)) continue;
+                var plan = SearchForGoal(current, goal, actions, rules);
                 if (plan != null) return plan;
             }
             return null;

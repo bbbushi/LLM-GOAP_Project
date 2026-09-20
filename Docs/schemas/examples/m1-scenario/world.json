@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "tick": 0,
+  "day": 1,
+  "values": {
+    "food": 2,
+    "wood": 0,
+    "npc.n1.hunger": 0,
+    "npc.n1.at_forest": 1
+  }
+}

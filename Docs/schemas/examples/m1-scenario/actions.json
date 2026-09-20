@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "actions": [
+    {
+      "id": "gather_berries",
+      "baseCost": 4,
+      "preconditions": [
+        { "key": "at_forest", "threshold": 1 }
+      ],
+      "effects": [
+        { "key": "food", "amount": 1 }
+      ]
+    },
+    {
+      "id": "chop_wood",
+      "baseCost": 6,
+      "preconditions": [
+        { "key": "at_forest", "threshold": 1 }
+      ],
+      "effects": [
+        { "key": "wood", "amount": 1 }
+      ]
+    },
+    {
+      "id": "eat",
+      "baseCost": 1,
+      "preconditions": [
+        { "key": "food", "threshold": 1 }
+      ],
+      "effects": [
+        { "key": "food", "amount": -1 },
+        { "key": "hunger", "op": "Set", "amount": 0 }
+      ]
+    }
+  ]
+}

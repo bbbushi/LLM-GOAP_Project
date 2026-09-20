@@ -1,6 +1,6 @@
 # 项目设计文档：基于 LLM 规则生成与 GOAP 自主规划的智能模拟经营游戏
 
-> 版本 v0.7 ｜ 2026-09-13 ｜ 实验性项目 · 双人接力协作 · 当前目标：最小可玩单元
+> 版本 v0.8 ｜ 2026-09-20 ｜ 实验性项目 · 双人接力协作 · 当前目标：最小可玩单元
 >
 > 本文档整合自项目概览与第一轮架构评审，作为后续开发与论文写作的基准文档。
 
@@ -144,6 +144,7 @@
 | World State | v1 | 2026-09-09 | `Docs/schemas/world-state.schema.json` | 纯数值平面键值对；缺失键视为 0；NPC 键 `npc.<id>.<key>`；天气不入世界状态；条件六算子（≥ 基线）、效果 Set/Add/MultiplyBy（+= 基线） |
 | 核心接口 | v1 | 2026-09-09 | `Assets/script/Core/Contracts/` | `IAction / IGoal / IWorldState / IPlanner / IRuleProvider / ILLMProvider` + 伴生 `IRuleSet`（三类倍率通道）；内核 `noEngineReferences` |
 | Action/Goal 配置 | v1 | 2026-09-13 | `Docs/schemas/action.schema.json`、`goal.schema.json` + 加载器 `Assets/script/Core/Config/` | 文件级集合格式 `{version, actions/goals:[…]}`；算子字符串与 `ConditionOp`/`EffectOp` 枚举名逐一对应，op 缺省取 ≥/+= 基线；id 库内唯一；加载器逐条镜像 Schema 约束（未知字段/算子显式报错，绝不静默忽略） |
+| Simulation 配置 | v1 | 2026-09-20 | `Docs/schemas/simulation.schema.json` + 加载器 `Assets/script/Core/Config/`（含 world-state 加载） | `{ticksPerGameHour, passiveEffects, agents[{id, localKeys, goalIds}]}`；被动效果每 tick 直接落盘（生存压力内容化，不经倍率通道）；localKeys 驱动键投影（规划视图 npc.\<id\>.\<key\>→裸键，效果写回落回个体命名空间——action.schema 所述投影职责的落地）；goalIds 跨文件引用由内核组合时校验；M1 场景示例 `Docs/schemas/examples/m1-scenario/` |
 
 ### 4.5 可扩展性设计（一等要求）
 

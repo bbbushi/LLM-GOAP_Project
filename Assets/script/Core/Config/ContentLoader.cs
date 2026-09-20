@@ -56,6 +56,15 @@ namespace Vibe.Core.Config
         private static readonly HashSet<string> EffectFields =
             new HashSet<string> { "key", "op", "amount" };
 
+        private static readonly HashSet<string> WorldStateFields =
+            new HashSet<string> { "version", "tick", "day", "values" };
+
+        private static readonly HashSet<string> SimulationFields =
+            new HashSet<string> { "version", "ticksPerGameHour", "passiveEffects", "agents" };
+
+        private static readonly HashSet<string> AgentFields =
+            new HashSet<string> { "id", "localKeys", "goalIds" };
+
         /// <summary>解析一份行动库（{version, actions:[…]}）。返回顺序与配置一致。</summary>
         public static IReadOnlyList<IAction> LoadActions(string json)
         {
@@ -118,6 +127,93 @@ namespace Vibe.Core.Config
             return goals;
         }
 
+        /// <summary>
+        /// 解析一份初始世界状态（{version, tick, day, values}）。
+        /// 格式由 Docs/schemas/world-state.schema.json（v1，冻结契约）定义。
+        /// </summary>
+        public static IWorldState LoadWorldState(string json)
+        {
+            if (json == null) throw new ArgumentNullException(nameof(json));
+            var root = JsonValue.Parse(json);
+            if (root.Type != JsonType.Object)
+                throw Fail($"顶层必须是对象（实际 {TypeName(root)}）");
+
+            CheckKnownFields(root, WorldStateFields, "顶层");
+            RequireVersion(root);
+
+            int tick = RequireInteger(root, "tick", "顶层", 0);
+            int day = RequireInteger(root, "day", "顶层", 1);
+
+            var valuesValue = RequireMember(root, "values");
+            if (valuesValue.Type != JsonType.Object)
+                throw Fail($"顶层 values 必须是对象（实际 {TypeName(valuesValue)}）");
+            var values = new Dictionary<string, double>(valuesValue.Members.Count);
+            foreach (var kv in valuesValue.Members)
+            {
+                if (kv.Value.Type != JsonType.Number)
+                    throw Fail($"values.{kv.Key} 必须是数值（实际 {TypeName(kv.Value)}；缺失键视为 0，无需显式补零）");
+                values[kv.Key] = kv.Value.AsNumber;
+            }
+            return new WorldState(tick, day, values);
+        }
+
+        /// <summary>
+        /// 解析一份模拟运行配置（{version, ticksPerGameHour, passiveEffects, agents}）。
+        /// 格式由 Docs/schemas/simulation.schema.json（v1，冻结契约）定义；
+        /// goalIds 对目标库的跨文件引用存在性由内核组合时校验（本加载器只见单文件）。
+        /// </summary>
+        public static SimulationConfig LoadSimulation(string json)
+        {
+            if (json == null) throw new ArgumentNullException(nameof(json));
+            var root = JsonValue.Parse(json);
+            if (root.Type != JsonType.Object)
+                throw Fail($"顶层必须是对象（实际 {TypeName(root)}）");
+
+            CheckKnownFields(root, SimulationFields, "顶层");
+            RequireVersion(root);
+
+            int ticksPerGameHour = RequireInteger(root, "ticksPerGameHour", "顶层", 1);
+
+            var passiveList = RequireMember(root, "passiveEffects");
+            if (passiveList.Type != JsonType.Array)
+                throw Fail($"顶层 passiveEffects 必须是数组（实际 {TypeName(passiveList)}）");
+            var passiveEffects = new List<WorldEffect>(passiveList.Items.Count);
+            for (int i = 0; i < passiveList.Items.Count; i++)
+                passiveEffects.Add(ParseEffect(passiveList.Items[i], $"passiveEffects[{i}]"));
+
+            var agentList = RequireMember(root, "agents");
+            if (agentList.Type != JsonType.Array)
+                throw Fail($"顶层 agents 必须是数组（实际 {TypeName(agentList)}）");
+            if (agentList.Items.Count == 0)
+                throw Fail("顶层 agents 不能为空（至少一个 NPC 声明）");
+
+            var agents = new List<AgentSpec>(agentList.Items.Count);
+            var seenAgentIds = new HashSet<string>();
+            for (int i = 0; i < agentList.Items.Count; i++)
+            {
+                string path = $"agents[{i}]";
+                var item = RequireObject(agentList.Items[i], path);
+                CheckKnownFields(item, AgentFields, path);
+
+                string id = RequireNonEmptyString(item, "id", path);
+                if (!seenAgentIds.Add(id))
+                    throw Fail($"{path}：id '{id}' 在库内重复（id 必须唯一）");
+
+                var localKeys = ParseStringList(item, "localKeys", path);
+                foreach (var key in localKeys)
+                    if (key.StartsWith("npc.", StringComparison.Ordinal))
+                        throw Fail($"{path} ('{id}')：localKeys 条目 '{key}' 不得以 npc. 开头"
+                            + "（localKeys 是裸键名，npc.<id>. 前缀的代入是内核投影的职责）");
+
+                var goalIds = ParseStringList(item, "goalIds", path);
+                if (goalIds.Count == 0)
+                    throw Fail($"{path} ('{id}')：goalIds 至少要有一条（无目标的 NPC 不参与规划）");
+
+                agents.Add(new AgentSpec(id, localKeys, goalIds));
+            }
+            return new SimulationConfig(ticksPerGameHour, passiveEffects, agents);
+        }
+
         // —— 顶层结构 ——
 
         /// <summary>校验顶层 {version, <paramref name="field"/>:[…]} 并返回条目列表。</summary>
@@ -126,12 +222,7 @@ namespace Vibe.Core.Config
             if (root.Type != JsonType.Object)
                 throw Fail($"顶层必须是对象（实际 {TypeName(root)}）");
 
-            var version = RequireMember(root, "version");
-            if (version.Type != JsonType.Number)
-                throw Fail($"顶层 version 必须是数值（实际 {TypeName(version)}）");
-            if ((int)version.AsNumber != version.AsNumber || (int)version.AsNumber != SupportedVersion)
-                throw Fail($"不支持的契约版本 {version.AsNumber}（本加载器支持 version={SupportedVersion}；"
-                    + "契约变更见 Docs/schemas/ 与 DESIGN.md §4.4）");
+            RequireVersion(root);
 
             var collection = RequireMember(root, field);
             if (collection.Type != JsonType.Array)
@@ -139,6 +230,48 @@ namespace Vibe.Core.Config
             if (collection.Items.Count == 0)
                 throw Fail($"顶层 {field} 不能为空（至少一条配置）");
             return collection.Items;
+        }
+
+        // —— 通用校验 ——
+
+        /// <summary>校验顶层 version 字段与 <see cref="SupportedVersion"/> 一致。</summary>
+        private static void RequireVersion(JsonValue root)
+        {
+            var version = RequireMember(root, "version");
+            if (version.Type != JsonType.Number)
+                throw Fail($"顶层 version 必须是数值（实际 {TypeName(version)}）");
+            if ((int)version.AsNumber != version.AsNumber || (int)version.AsNumber != SupportedVersion)
+                throw Fail($"不支持的契约版本 {version.AsNumber}（本加载器支持 version={SupportedVersion}；"
+                    + "契约变更见 Docs/schemas/ 与 DESIGN.md §4.4）");
+        }
+
+        /// <summary>取整数字段并校验下界（浮点值但整数量（如 3.0）视为合法整数）。</summary>
+        private static int RequireInteger(JsonValue obj, string field, string path, int minimum)
+        {
+            double value = RequireNumber(obj, field, path);
+            if ((int)value != value)
+                throw Fail($"{path} 的 {field} 必须是整数（实际 {value}）");
+            if (value < minimum)
+                throw Fail($"{path} 的 {field} 不能小于 {minimum}（实际 {value}）");
+            return (int)value;
+        }
+
+        /// <summary>解析非空字符串数组字段（localKeys / goalIds 等）。</summary>
+        private static IReadOnlyList<string> ParseStringList(JsonValue parent, string field, string path)
+        {
+            var list = RequireMember(parent, field);
+            if (list.Type != JsonType.Array)
+                throw Fail($"{path} 的 {field} 必须是数组（实际 {TypeName(list)}）");
+
+            var result = new List<string>(list.Items.Count);
+            for (int i = 0; i < list.Items.Count; i++)
+            {
+                var entry = list.Items[i];
+                if (entry.Type != JsonType.String || entry.AsString.Length == 0)
+                    throw Fail($"{path} 的 {field}[{i}] 必须是非空字符串（实际 {TypeName(entry)}）");
+                result.Add(entry.AsString);
+            }
+            return result;
         }
 
         // —— 条件 / 效果 ——
