@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "goals": [
+    {
+      "id": "stay_alive",
+      "priority": 10,
+      "conditions": [{ "key": "hunger", "op": "LessOrEqual", "threshold": 60 }]
+    },
+    {
+      "id": "stock_food",
+      "priority": 5,
+      "conditions": [{ "key": "food", "threshold": 4 }]
+    },
+    {
+      "id": "stock_wood",
+      "priority": 5,
+      "conditions": [{ "key": "wood", "threshold": 4 }]
+    }
+  ]
+}

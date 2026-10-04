@@ -729,5 +729,96 @@ namespace Vibe.Core.Tests
             Assert.AreEqual(3, resolved.Count, "t62/123/184 采集补回后解除");
             CollectionAssert.AreEqual(new[] { 62, 123, 184 }, resolved.Select(e => e.Tick).ToList());
         }
+
+        // ── M2 卡③：多 NPC 资源竞争/协作，自主运转 3 游戏日（DoD-1 预演）──
+
+        /// <summary>m2-scenario 的目标库：囤积目标按 NPC 分叉（n1→stock_food、n2→stock_wood）制造分工。</summary>
+        private const string M2Goals =
+            @"{""version"":1,""goals"":[
+                {""id"":""stay_alive"",""priority"":10,
+                 ""conditions"":[{""key"":""hunger"",""op"":""LessOrEqual"",""threshold"":60}]},
+                {""id"":""stock_food"",""priority"":5,
+                 ""conditions"":[{""key"":""food"",""threshold"":4}]},
+                {""id"":""stock_wood"",""priority"":5,
+                 ""conditions"":[{""key"":""wood"",""threshold"":4}]}]}";
+
+        private const string M2SimConfig =
+            @"{""version"":1,""ticksPerGameHour"":10,
+                ""passiveEffects"":[{""key"":""npc.n1.hunger"",""amount"":1},{""key"":""npc.n2.hunger"",""amount"":1}],
+                ""agents"":[{""id"":""n1"",""localKeys"":[""hunger"",""at_forest""],
+                             ""goalIds"":[""stay_alive"",""stock_food""]},
+                            {""id"":""n2"",""localKeys"":[""hunger"",""at_forest""],
+                             ""goalIds"":[""stay_alive"",""stock_wood""]}],
+                ""crises"":[{""id"":""famine"",
+                             ""conditions"":[{""key"":""food"",""op"":""LessOrEqual"",""threshold"":1}]}]}";
+
+        private static Simulation NewM2Simulation()
+        {
+            var world = ContentLoader.LoadWorldState(
+                @"{""version"":1,""tick"":0,""day"":1,
+                    ""values"":{""food"":2,""wood"":0,
+                                ""npc.n1.hunger"":0,""npc.n2.hunger"":0,
+                                ""npc.n1.at_forest"":1,""npc.n2.at_forest"":1}}");
+            return new Simulation(world, ContentLoader.LoadActions(M1Actions), // 行动库与 M1 相同：竞争/分工全靠目标分叉
+                ContentLoader.LoadGoals(M2Goals), ContentLoader.LoadSimulation(M2SimConfig));
+        }
+
+        [Test]
+        public void M2Scenario_TwoNpcDivisionOfLabour_Survives3GameDays()
+        {
+            var sim = NewM2Simulation();
+            double maxHunger1 = 0d, maxHunger2 = 0d, minFood = double.MaxValue;
+            for (int i = 0; i < 720; i++) // 3 游戏日 = 720 tick
+            {
+                sim.Step();
+                maxHunger1 = Math.Max(maxHunger1, sim.Current.Get("npc.n1.hunger"));
+                maxHunger2 = Math.Max(maxHunger2, sim.Current.Get("npc.n2.hunger"));
+                minFood = Math.Min(minFood, sim.Current.Get("food"));
+            }
+
+            // 自主运转 3 游戏日，时间与日界正确
+            Assert.AreEqual(720, sim.Tick);
+            Assert.AreEqual(4, sim.Day);
+            Assert.AreEqual(0, sim.GameHour);
+            Assert.AreEqual(3, sim.Events.Count(e => e.Type == SimEventType.DayBegin));
+
+            // 生存：无饿死（从未 unplannable）、饥饿不失控（越 60 当 tick 进食）
+            Assert.AreEqual(0, sim.Events.Count(e => e.Idle == IdleReason.Unplannable), "无 NPC 陷入不可规划");
+            Assert.LessOrEqual(maxHunger1, 61d);
+            Assert.LessOrEqual(maxHunger2, 61d);
+
+            // 分工（目标分叉的涌现行为）：n1 只采集、n2 只伐木
+            Assert.AreEqual(24, sim.Events.Count(e => e.AgentId == "n1" && e.ActionId == "gather_berries"));
+            Assert.AreEqual(0, sim.Events.Count(e => e.AgentId == "n1" && e.ActionId == "chop_wood"));
+            Assert.AreEqual(4, sim.Events.Count(e => e.AgentId == "n2" && e.ActionId == "chop_wood"));
+            Assert.AreEqual(0, sim.Events.Count(e => e.AgentId == "n2" && e.ActionId == "gather_berries"));
+
+            // 竞争：两人吃同一份食物（各 11 次、同 tick 相位同步——顺序结算下后者看到前者吃后的余量）
+            var eat1 = sim.Events.Where(e => e.AgentId == "n1" && e.ActionId == "eat").Select(e => e.Tick).ToList();
+            var eat2 = sim.Events.Where(e => e.AgentId == "n2" && e.ActionId == "eat").Select(e => e.Tick).ToList();
+            Assert.AreEqual(11, eat1.Count);
+            CollectionAssert.AreEqual(eat1, eat2, "hunger 相位同步 → 同 tick 双吃（对食物的直接竞争）");
+
+            // 协作 + 资源守恒：n1 采 24 供两人吃 22 并囤至 4（2 + 24 - 22 = 4）；n2 囤木 4
+            Assert.AreEqual(4d, sim.Current.Get("food"));
+            Assert.AreEqual(4d, sim.Current.Get("wood"));
+            Assert.AreEqual(49d, sim.Current.Get("npc.n1.hunger"), "末期饥饿（t671 进食清零后累加 720-671）");
+            Assert.AreEqual(49d, sim.Current.Get("npc.n2.hunger"));
+
+            // 危机监测在岗不误报：协作良好时 food 谷值不破饥荒线
+            Assert.GreaterOrEqual(minFood, 2d, "食物谷值（危机阈值 food≤1 从未触及）");
+            Assert.AreEqual(0, sim.Events.Count(e => e.CrisisId != null));
+        }
+
+        [Test]
+        public void M2Scenario_SameInput_ProducesIdenticalEventStream()
+        {
+            var a = NewM2Simulation();
+            var b = NewM2Simulation();
+            a.Run(720);
+            b.Run(720);
+
+            Assert.IsTrue(a.Events.SequenceEqual(b.Events), "多 NPC 同输入同事件流（可复现）");
+        }
     }
 }

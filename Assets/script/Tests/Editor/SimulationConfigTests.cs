@@ -330,6 +330,35 @@ namespace Vibe.Core.Tests
             Assert.AreEqual("n1", cfg.Agents[0].Id);
         }
 
+        [Test]
+        public void M2ScenarioFiles_OnDisk_LoadCleanly()
+        {
+            // M2 多 NPC 场景（2 NPC 分工 + famine 危机）盘上四件套可加载；
+            // 运行时行为断言在 SimulationTests 的内联镜像上进行。
+            const string dir = "Docs/schemas/examples/m2-scenario/";
+            if (!TryReadFile(dir + "actions.json", out var actionsJson) ||
+                !TryReadFile(dir + "goals.json", out var goalsJson) ||
+                !TryReadFile(dir + "world.json", out var worldJson) ||
+                !TryReadFile(dir + "simulation.json", out var simJson))
+            {
+                Assert.Ignore("工作目录下未找到 M2 场景文件，跳过（应在工程根运行）");
+                return;
+            }
+            Assert.AreEqual(3, ContentLoader.LoadActions(actionsJson).Count, "行动库与 M1 相同");
+            Assert.AreEqual(3, ContentLoader.LoadGoals(goalsJson).Count, "stay_alive 共用 + 囤积目标分叉");
+
+            var world = ContentLoader.LoadWorldState(worldJson);
+            Assert.AreEqual(0, world.Tick);
+            Assert.AreEqual(1, world.Day);
+            Assert.AreEqual(2d, world.Get("food"));
+
+            var cfg = ContentLoader.LoadSimulation(simJson);
+            Assert.AreEqual(2, cfg.Agents.Count, "双 NPC");
+            Assert.AreEqual(2, cfg.PassiveEffects.Count, "两条饥饿被动结算");
+            Assert.AreEqual(1, cfg.Crises.Count, "famine 危机在岗");
+            Assert.AreEqual("famine", cfg.Crises[0].Id);
+        }
+
         private static bool TryReadFile(string relativePath, out string content)
         {
             content = null;
