@@ -21,7 +21,7 @@ chmod +x "Scripts/devlog/devlog.sh"
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.vibeproject.devlog.plist
 ```
 
-注意：`devlog.sh` 与 plist 里的项目路径是**本机绝对路径**（外置卷 `/Volumes/workspace 1/...`），换机器要同步改这两处。
+注意：`devlog.sh` 自定位项目根（脚本所在仓库的上两级），**不依赖卷名/挂载路径**；plist 里的程序路径仍是**本机绝对路径**，换机器或外置卷挂载名变化（如 `/Volumes/workspace` ↔ `/Volumes/workspace 1`）时要同步改 plist 并重载。卷名变化导致的断更在脚本侧**无任何日志痕迹**（launchd 找不到程序，根本跑不到脚本）——`status` 里「上次运行」日期停滞即是信号。
 
 ## 常用操作
 

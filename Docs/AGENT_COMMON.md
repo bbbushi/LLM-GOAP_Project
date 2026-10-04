@@ -33,6 +33,7 @@
 - **headless 内核是一等公民**：模拟内核必须可脱离 Unity 渲染独立运行与测试；Unity 界面只是可插拔前端。
 - **可观测性优先**：事件总线 + 全量行为日志，每次规划/规则变更/LLM 调用都留痕。
 - **可复现**：固定随机种子 + 记录并缓存全部 LLM 请求/响应。
+- **MCP 默认禁止**：Unity 编辑器桥接（unity-mcp）默认不注册（禁令落在注册层：不注册 = 工具对所有走注册表的客户端不存在）；仅当任务需要直接操作编辑器（跑 PlayMode 测试、读 Console、执行编辑器命令）时**经用户确认**临时开放，用完即关。开关：`Scripts/mcp/mcp.sh on|off|status`（机制与边界见其 README）。
 
 ## 5. 协作模式：接力式开发
 
@@ -79,7 +80,7 @@
   ```
 - 无 lint/CI。本地 git 仓库已初始化（`.gitignore`/`.gitattributes` 为 Unity 标准模板，YAML 资产走 UnityYAMLMerge）。
 - **共享远程**：`origin` = `github.com/bbbushi/LLM-GOAP_Project`（私有）。约定：产生新提交后即 push；push 失败不阻塞本地工作。
-- **工具脚本**：`Scripts/devlog/`——每日开发日志自动化（开关、安装、约束见其 README）。新增运维类脚本放 `Scripts/<名称>/`，并在此处登记一行。
+- **工具脚本**：`Scripts/devlog/`——每日开发日志自动化（开关、安装、约束见其 README）。`Scripts/mcp/`——MCP 纳管开关（规则见 §4，用法见其 README）。新增运维类脚本放 `Scripts/<名称>/`，并在此处登记一行。
 
 ## 8. 工程约定
 

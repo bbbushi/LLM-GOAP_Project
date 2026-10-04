@@ -11,8 +11,9 @@ export PATH="$HOME/.local/bin:$HOME/.claude/local:/opt/homebrew/bin:/usr/local/b
 # glm-5.3-flash 不在 Claude Code 模型目录中，禁用未知模型上下文窗口强制检查，消除每次运行的警告
 export CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT=1
 
-PROJECT_DIR="/Volumes/workspace 1/UnityProject/vibe Project"   # 本机绝对路径，换机器需同步改 plist 与此处
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# 项目根 = 脚本所在仓库根（Scripts/devlog/ 的上两级），自定位，不依赖卷名/挂载路径
+PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TODAY="$(date +%F)"
 DEVLOG_DIR="$PROJECT_DIR/Docs/devlog"
 TARGET="$DEVLOG_DIR/$TODAY.md"

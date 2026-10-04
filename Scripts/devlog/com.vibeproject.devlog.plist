@@ -7,8 +7,8 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<!-- 本机绝对路径（含空格），换机器需同步修改 -->
-		<string>/Volumes/workspace 1/UnityProject/vibe Project/Scripts/devlog/devlog.sh</string>
+		<!-- 本机绝对路径（含空格），换机器/卷名变化需同步修改；devlog.sh 本身自定位项目根，无需改 -->
+		<string>/Volumes/workspace/UnityProject/vibe Project/Scripts/devlog/devlog.sh</string>
 	</array>
 	<key>StartCalendarInterval</key>
 	<dict>
