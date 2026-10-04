@@ -8,7 +8,8 @@ namespace Vibe.Core
     /// <summary>
     /// headless 模拟内核（DESIGN.md §4.2「模拟内核」）：tick 循环 + 资源结算 + NPC 调度。
     /// 每 tick 的固定次序：推进时间戳 → 被动结算（饥饿上升等，配置于 simulation.schema.json v1，
-    /// 直接落盘不经倍率通道）→ 规则变更失效检查 → 各 NPC 依次执行 GOAP 循环（<see cref="NpcAgent"/>）。
+    /// 直接落盘不经倍率通道）→ 规则变更失效检查 → 各 NPC 依次执行 GOAP 循环（<see cref="NpcAgent"/>）
+    /// → 危机检测（<see cref="SimulationConfig.Crises"/>：对行动后的完整世界状态求值，边沿触发）。
     ///
     /// 时间模型：tick 为最小时间步；游戏小时 / 游戏日由配置换算（ticksPerGameHour × 24 = ticksPerDay），
     /// 日界对齐绝对 tick（ticksPerDay 的整数倍处 day+1）——初始快照的 tick/day 不符合该约定时
@@ -32,6 +33,7 @@ namespace Vibe.Core
         private readonly List<NpcAgent> _agents;
         private readonly List<string> _log = new List<string>();
         private readonly List<SimEvent> _events = new List<SimEvent>();
+        private readonly HashSet<string> _activeCrises = new HashSet<string>();
         private bool _subscribedRulesChanged;
 
         private IWorldState _world;
@@ -168,6 +170,23 @@ namespace Vibe.Core
                 var report = agent.Act(_world, _actions, _planner, _rules);
                 _log.Add(FormatLine(nextTick, nextDay, agent.Id, report));
                 EmitAgentEvents(nextTick, nextDay, agent.Id, report);
+            }
+
+            // 5. 危机检测：对行动后的完整世界状态求值（tick 中段瞬时恶化若被同 tick 行动
+            //    补回则不算——求值的是本 tick 的定局）；边沿触发，配置序即事件序（确定性）
+            foreach (var crisis in Config.Crises)
+            {
+                bool present = _world.Meets(crisis.Conditions);
+                if (present && _activeCrises.Add(crisis.Id))
+                {
+                    _log.Add($"[t={nextTick}] crisis {crisis.Id} triggered");
+                    Emit(SimEvent.CrisisEntered(nextTick, nextDay, crisis.Id));
+                }
+                else if (!present && _activeCrises.Remove(crisis.Id))
+                {
+                    _log.Add($"[t={nextTick}] crisis {crisis.Id} resolved");
+                    Emit(SimEvent.CrisisLeft(nextTick, nextDay, crisis.Id));
+                }
             }
         }
 

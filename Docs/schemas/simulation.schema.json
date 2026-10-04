@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/bbbushi/LLM-GOAP_Project/Docs/schemas/simulation.schema.json",
   "title": "SimulationConfig",
-  "description": "模拟运行配置（权威契约 v1，冻结于 M1 卡⑤，2026-09-20）。一份运行配置 = tick 与游戏时间的换算 + 每 tick 被动结算效果 + 参与模拟的 NPC 声明。被动效果是生存压力的来源（如饥饿上升），直接以完整键名（含 npc.<id>. 前缀）作用于世界状态，不经倍率通道（通道只作用于行动效果结算）。agents[].localKeys 声明该 NPC 的个体键清单，驱动键投影：规划时 npc.<id>.<key> 投影为裸键 <key> 供行动/目标条件使用，行动效果写回时裸键 ∈ localKeys 则落回 npc.<id>.<key>（action.schema.json 所述「单 NPC 规划时的键投影/代入是规划侧职责」的落地）。goalIds 引用目标库（goal.schema.json）中的 id，跨文件引用由内核组合时校验。修改本契约须升 version 并同步 Docs/DESIGN.md。",
+  "description": "模拟运行配置（权威契约 v1，冻结于 M1 卡⑤，2026-09-20；2026-10-04 M2 卡②增补可选 crises 字段，向后兼容，仍为 v1）。一份运行配置 = tick 与游戏时间的换算 + 每 tick 被动结算效果 + 参与模拟的 NPC 声明 + 危机定义（可选）。被动效果是生存压力的来源（如饥饿上升），直接以完整键名（含 npc.<id>. 前缀）作用于世界状态，不经倍率通道（通道只作用于行动效果结算）。agents[].localKeys 声明该 NPC 的个体键清单，驱动键投影：规划时 npc.<id>.<key> 投影为裸键 <key> 供行动/目标条件使用，行动效果写回时裸键 ∈ localKeys 则落回 npc.<id>.<key>（action.schema.json 所述「单 NPC 规划时的键投影/代入是规划侧职责」的落地）。goalIds 引用目标库（goal.schema.json）中的 id，跨文件引用由内核组合时校验。crises 定义危机（资源枯竭等）：条件全满足 = 危机在场，tick 末求值、边沿触发（进入发 CrisisTriggered、解除发 CrisisResolved，见事件契约）。修改本契约须升 version 并同步 Docs/DESIGN.md。",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "ticksPerGameHour", "passiveEffects", "agents"],
@@ -27,9 +27,52 @@
       "uniqueItems": true,
       "description": "参与模拟的 NPC 声明列表（M1 为单 NPC；多 NPC 结构自此就绪，M2 启用）。",
       "items": { "$ref": "#/$defs/agent" }
+    },
+    "crises": {
+      "type": "array",
+      "description": "危机定义列表（可选，缺省为空 = 无危机监测）。条件在每 tick 末（全部 NPC 行动后）对完整世界状态求值：全部满足 = 危机在场；边沿触发——进入发 CrisisTriggered、持续在场不再重发、解除发 CrisisResolved、再次进入可重新触发（M3 据此事件驱动 LLM 规则调整）。",
+      "items": { "$ref": "#/$defs/crisis" }
     }
   },
   "$defs": {
+    "crisis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "conditions"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "危机标识（如 famine）；文件内唯一（由加载器强制报错）；进事件流的 CrisisId 字段。"
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/condition" },
+          "description": "危机在场条件（全满足 = AND，语义与行动/目标条件一致）。读完整键空间（共享裸键与 npc.<id>.<key> 均可，不做 NPC 投影——危机检测是全局观察者）。"
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "threshold"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "世界状态键（比较前缺失键取 0）。"
+        },
+        "op": {
+          "enum": ["GreaterOrEqual", "Greater", "Equal", "Less", "LessOrEqual", "NotEqual"],
+          "description": "比较算子，与 ConditionOp 枚举名一致。缺省 GreaterOrEqual（≥ 基线）。Equal 用于 0/1 旗标，勿对连续量做浮点直等。"
+        },
+        "threshold": {
+          "type": "number",
+          "description": "阈值（key 与之比较）。"
+        }
+      }
+    },
     "agent": {
       "type": "object",
       "additionalProperties": false,

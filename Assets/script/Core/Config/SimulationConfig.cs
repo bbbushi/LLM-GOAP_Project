@@ -28,9 +28,31 @@ namespace Vibe.Core.Config
     }
 
     /// <summary>
+    /// 一个危机定义（<see cref="SimulationConfig"/> 的 crises 条目，纯数据）：条件全满足 = 危机在场。
+    /// 求值语义（tick 末、边沿触发、全局观察者不投影）见 <see cref="SimulationConfig.Crises"/> 与
+    /// Simulation.Step；触发/解除以 CrisisTriggered / CrisisResolved 事件留痕（事件契约 v1）。
+    /// 仅经 <see cref="ContentLoader"/> 构造——校验（非空 id、conditions 至少一条、文件内唯一）
+    /// 是加载流程的一部分。
+    /// </summary>
+    public sealed class CrisisSpec
+    {
+        /// <summary>危机标识（如 famine）；进事件流的 CrisisId。</summary>
+        public string Id { get; }
+
+        /// <summary>在场条件（全满足 = AND；读完整键空间，不做 NPC 投影）。</summary>
+        public IReadOnlyList<WorldCondition> Conditions { get; }
+
+        internal CrisisSpec(string id, IReadOnlyList<WorldCondition> conditions)
+        {
+            Id = id;
+            Conditions = conditions;
+        }
+    }
+
+    /// <summary>
     /// 模拟运行配置（<see cref="ContentLoader.LoadSimulation"/> 的产物，纯数据）：
-    /// tick 与游戏时间的换算、每 tick 被动结算效果、参与模拟的 NPC 声明。
-    /// Schema 见 Docs/schemas/simulation.schema.json（v1，冻结契约）。
+    /// tick 与游戏时间的换算、每 tick 被动结算效果、参与模拟的 NPC 声明、危机定义（可选）。
+    /// Schema 见 Docs/schemas/simulation.schema.json（v1，冻结契约；crises 为 v1 内向后兼容增补）。
     /// </summary>
     public sealed class SimulationConfig
     {
@@ -43,12 +65,18 @@ namespace Vibe.Core.Config
         /// <summary>参与模拟的 NPC 声明（M1 为单 NPC，多 NPC 结构自此就绪）。</summary>
         public IReadOnlyList<AgentSpec> Agents { get; }
 
+        /// <summary>危机定义（可选内容，缺省为空 = 无危机监测）。求值在每 tick 末（全部 NPC 行动后），
+        /// 边沿触发：进入发 CrisisTriggered、解除发 CrisisResolved（事件契约 v1）。</summary>
+        public IReadOnlyList<CrisisSpec> Crises { get; }
+
         internal SimulationConfig(int ticksPerGameHour,
-            IReadOnlyList<WorldEffect> passiveEffects, IReadOnlyList<AgentSpec> agents)
+            IReadOnlyList<WorldEffect> passiveEffects, IReadOnlyList<AgentSpec> agents,
+            IReadOnlyList<CrisisSpec> crises)
         {
             TicksPerGameHour = ticksPerGameHour;
             PassiveEffects = passiveEffects;
             Agents = agents;
+            Crises = crises;
         }
     }
 }

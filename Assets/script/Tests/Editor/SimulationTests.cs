@@ -84,10 +84,12 @@ namespace Vibe.Core.Tests
         private const string AgentN1WithHunger =
             "{\"id\":\"n1\",\"localKeys\":[\"hunger\",\"at_forest\"],\"goalIds\":[\"g\"]}";
 
-        private static SimulationConfig MakeConfig(string passiveJson, string agentsJson, int tph = 1) =>
+        private static SimulationConfig MakeConfig(string passiveJson, string agentsJson, int tph = 1,
+            string crisesJson = null) =>
             ContentLoader.LoadSimulation(
                 "{\"version\":1,\"ticksPerGameHour\":" + tph +
-                ",\"passiveEffects\":" + passiveJson + ",\"agents\":[" + agentsJson + "]}");
+                ",\"passiveEffects\":" + passiveJson + ",\"agents\":[" + agentsJson + "]" +
+                (crisesJson == null ? "" : ",\"crises\":" + crisesJson) + "}");
 
         private static WorldState World(IDictionary<string, double> values, int tick = 0, int day = 1) =>
             new WorldState(tick, day, values ?? new Dictionary<string, double>());
@@ -559,13 +561,13 @@ namespace Vibe.Core.Tests
                 ""agents"":[{""id"":""n1"",""localKeys"":[""hunger"",""at_forest""],
                              ""goalIds"":[""stay_alive"",""stock_up""]}]}";
 
-        private static Simulation NewM1Simulation()
+        private static Simulation NewM1Simulation(string simConfigJson = M1SimConfig)
         {
             var world = ContentLoader.LoadWorldState(
                 @"{""version"":1,""tick"":0,""day"":1,
                     ""values"":{""food"":2,""wood"":0,""npc.n1.hunger"":0,""npc.n1.at_forest"":1}}");
             return new Simulation(world, ContentLoader.LoadActions(M1Actions),
-                ContentLoader.LoadGoals(M1Goals), ContentLoader.LoadSimulation(M1SimConfig));
+                ContentLoader.LoadGoals(M1Goals), ContentLoader.LoadSimulation(simConfigJson));
         }
 
         [Test]
@@ -598,6 +600,134 @@ namespace Vibe.Core.Tests
             Assert.AreEqual(3, sim.Log.Count(l => l.EndsWith("exec chop_wood")), "开局囤木 3 次");
             Assert.AreEqual(230, sim.Log.Count(l => l.Contains("idle(")));
             Assert.AreEqual(241, sim.Log.Count, "240 行行为日志 + 1 行日界");
+        }
+
+        // ── M2 卡②：危机检测（tick 末求值、边沿触发、事件留痕）──
+
+        /// <summary>M1 场景配置 + 饥荒危机（食物盈耗尽即触发：阈值取 2——进食后存量恰触底）。</summary>
+        private const string M1SimConfigWithFamine =
+            @"{""version"":1,""ticksPerGameHour"":10,
+                ""passiveEffects"":[{""key"":""npc.n1.hunger"",""amount"":1}],
+                ""agents"":[{""id"":""n1"",""localKeys"":[""hunger"",""at_forest""],
+                             ""goalIds"":[""stay_alive"",""stock_up""]}],
+                ""crises"":[{""id"":""famine"",
+                             ""conditions"":[{""key"":""food"",""op"":""LessOrEqual"",""threshold"":2}]}]}";
+
+        [Test]
+        public void Crisis_EdgeTriggered_PersistsWithoutRefire()
+        {
+            // flag 只降不升：进入危机后持续在场，Triggered 只发一次、无 Resolved
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("gold", 1) }) };
+            var sim = new Simulation(World(new Dictionary<string, double> { ["flag"] = 3 }), new List<IAction>(),
+                goals, MakeConfig("[{\"key\":\"flag\",\"amount\":-1}]", AgentN1,
+                    crisesJson: "[{\"id\":\"drain\",\"conditions\":[{\"key\":\"flag\",\"op\":\"LessOrEqual\",\"threshold\":2}]}]"));
+            sim.Run(3);
+
+            var triggered = sim.Events.Where(e => e.Type == SimEventType.CrisisTriggered).ToList();
+            Assert.AreEqual(1, triggered.Count, "t1 flag=2 触发；t2/t3 持续在场不重发");
+            Assert.AreEqual(1, triggered[0].Tick);
+            Assert.AreEqual("drain", triggered[0].CrisisId);
+            Assert.IsNull(triggered[0].AgentId, "危机事件无行为主体");
+            Assert.IsNull(triggered[0].ActionId);
+            Assert.AreEqual(0, sim.Events.Count(e => e.Type == SimEventType.CrisisResolved));
+            Assert.AreEqual(1, sim.Log.Count(l => l.Contains("crisis drain triggered")), "日志留痕一次");
+        }
+
+        [Test]
+        public void Crisis_Resolved_WhenConditionClears_AfterAgentEvents()
+        {
+            // t1 饥饿越界→进食把 food 吃到 0（tick 末触发饥荒）；t2 采集补回（tick 末解除）
+            var actions = new List<IAction>
+            {
+                new StubAction("gather", 4f,
+                    new[] { WorldCondition.AtLeast("food", 0) },
+                    new[] { WorldEffect.Gain("food", 1) }),
+                new StubAction("eat", 1f,
+                    new[] { WorldCondition.AtLeast("food", 1) },
+                    new[] { WorldEffect.Gain("food", -1), new WorldEffect("hunger", EffectOp.Set, 0) }),
+            };
+            var goals = new List<IGoal>
+            {
+                new StubGoal("stay_alive", 10f, new[] { new WorldCondition("hunger", ConditionOp.LessOrEqual, 60) }),
+                new StubGoal("stock_up", 5f, new[] { WorldCondition.AtLeast("food", 2) }),
+            };
+            const string agentWithSurvivalGoals =
+                "{\"id\":\"n1\",\"localKeys\":[\"hunger\",\"at_forest\"],\"goalIds\":[\"stay_alive\",\"stock_up\"]}";
+            var sim = new Simulation(
+                World(new Dictionary<string, double> { ["food"] = 1, ["npc.n1.hunger"] = 60, ["npc.n1.at_forest"] = 1 }),
+                actions, goals,
+                MakeConfig("[{\"key\":\"npc.n1.hunger\",\"amount\":1}]", agentWithSurvivalGoals,
+                    crisesJson: "[{\"id\":\"famine\",\"conditions\":[{\"key\":\"food\",\"op\":\"LessOrEqual\",\"threshold\":0}]}]"));
+
+            sim.Step(); // t1：吃 → food=0 → tick 末触发
+            sim.Step(); // t2：采集 → food=1 → tick 末解除
+
+            var crisisEvents = sim.Events.Where(e => e.CrisisId != null).ToList();
+            Assert.AreEqual(2, crisisEvents.Count);
+            Assert.AreEqual(SimEventType.CrisisTriggered, crisisEvents[0].Type);
+            Assert.AreEqual(1, crisisEvents[0].Tick);
+            Assert.AreEqual(SimEventType.CrisisResolved, crisisEvents[1].Type);
+            Assert.AreEqual(2, crisisEvents[1].Tick);
+            // 危机事件在本 tick 行为事件之后（求值的是行动后的定局）：t1 = [Replan, Exec(eat), Triggered]
+            Assert.AreEqual(SimEventType.AgentReplanned, sim.Events[0].Type);
+            Assert.AreEqual(SimEventType.AgentExecuted, sim.Events[1].Type);
+            Assert.AreEqual(SimEventType.CrisisTriggered, sim.Events[2].Type);
+            StringAssert.Contains("crisis famine resolved", sim.Log[3]);
+        }
+
+        [Test]
+        public void Crisis_SameTickRecovery_ByAgentAction_DoesNotTrigger()
+        {
+            // 被动流失使 food 触底，但 NPC 同 tick 补回——tick 末求值看定局，不误报
+            var actions = new List<IAction> { new StubAction("add", 1f, null, new[] { WorldEffect.Gain("food", 3) }) };
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("food", 1) }) };
+            var sim = new Simulation(World(new Dictionary<string, double> { ["food"] = 2 }), actions, goals,
+                MakeConfig("[{\"key\":\"food\",\"amount\":-2}]", AgentN1,
+                    crisesJson: "[{\"id\":\"famine\",\"conditions\":[{\"key\":\"food\",\"op\":\"LessOrEqual\",\"threshold\":0}]}]"));
+
+            sim.Run(5);
+
+            Assert.AreEqual(0, sim.Events.Count(e => e.CrisisId != null),
+                "每 tick 都被行动补回，危机从未在场（求值点在行动后）");
+        }
+
+        [Test]
+        public void Crisis_MultipleSimultaneous_EmittedInConfigOrder()
+        {
+            // 两个危机同 tick 在场：事件按配置序发出（确定性）；条件可引用 npc.<id>.<key> 完整键
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("gold", 1) }) };
+            var sim = new Simulation(
+                World(new Dictionary<string, double> { ["food"] = 0, ["npc.n1.hunger"] = 2 }),
+                new List<IAction>(), goals,
+                MakeConfig("[{\"key\":\"npc.n1.hunger\",\"amount\":1}]", AgentN1,
+                    crisesJson: "[{\"id\":\"famine\",\"conditions\":[{\"key\":\"food\",\"op\":\"LessOrEqual\",\"threshold\":1}]}," +
+                                "{\"id\":\"exhaustion\",\"conditions\":[{\"key\":\"npc.n1.hunger\",\"op\":\"Greater\",\"threshold\":2}]}]"));
+
+            sim.Step(); // t1：hunger=3、food=0 → 两危机同时在场
+
+            var triggered = sim.Events.Where(e => e.Type == SimEventType.CrisisTriggered).ToList();
+            Assert.AreEqual(2, triggered.Count);
+            Assert.AreEqual("famine", triggered[0].CrisisId, "配置序即事件序");
+            Assert.AreEqual("exhaustion", triggered[1].CrisisId);
+            Assert.AreEqual(1, triggered[0].Tick);
+            Assert.AreEqual(1, triggered[0].Day);
+        }
+
+        [Test]
+        public void Crisis_M1Scenario_FamineCycle_TriggersAndRearms()
+        {
+            // M1 全程 + food≤2 危机：每次进食触底触发、次 tick 采集补回解除——3 轮触发/解除，tick 精确
+            var sim = NewM1Simulation(M1SimConfigWithFamine);
+            sim.Run(240);
+
+            var triggered = sim.Events.Where(e => e.Type == SimEventType.CrisisTriggered).ToList();
+            Assert.AreEqual(3, triggered.Count, "t61/122/183 进食后 food=2 触发");
+            CollectionAssert.AreEqual(new[] { 61, 122, 183 }, triggered.Select(e => e.Tick).ToList());
+            Assert.IsTrue(triggered.All(e => e.CrisisId == "famine"));
+
+            var resolved = sim.Events.Where(e => e.Type == SimEventType.CrisisResolved).ToList();
+            Assert.AreEqual(3, resolved.Count, "t62/123/184 采集补回后解除");
+            CollectionAssert.AreEqual(new[] { 62, 123, 184 }, resolved.Select(e => e.Tick).ToList());
         }
     }
 }

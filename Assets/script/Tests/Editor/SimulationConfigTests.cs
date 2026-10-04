@@ -222,6 +222,84 @@ namespace Vibe.Core.Tests
             Assert.Throws<System.ArgumentNullException>(() => ContentLoader.LoadSimulation(null));
         }
 
+        // ── crises（M2 卡②增补，可选字段）──────────────────────
+
+        [Test]
+        public void LoadSimulation_CrisesAbsent_EmptyList()
+        {
+            var cfg = ContentLoader.LoadSimulation(SimJson); // SimJson 无 crises
+            Assert.IsNotNull(cfg.Crises);
+            Assert.AreEqual(0, cfg.Crises.Count, "缺省 crises = 无危机监测（向后兼容）");
+        }
+
+        [Test]
+        public void LoadSimulation_Crises_ParsedInOrder_WithOps()
+        {
+            var cfg = ContentLoader.LoadSimulation(
+                @"{""version"":1,""ticksPerGameHour"":1,""passiveEffects"":[],
+                   ""agents"":[{""id"":""n1"",""localKeys"":[""hunger""],""goalIds"":[""g""]}],
+                   ""crises"":[
+                     {""id"":""famine"",
+                      ""conditions"":[{""key"":""food"",""op"":""LessOrEqual"",""threshold"":1}]},
+                     {""id"":""exhaustion"",
+                      ""conditions"":[{""key"":""npc.n1.hunger"",""op"":""Greater"",""threshold"":80}]}]}");
+
+            Assert.AreEqual(2, cfg.Crises.Count, "顺序与配置一致（求值序即事件序）");
+            Assert.AreEqual("famine", cfg.Crises[0].Id);
+            Assert.AreEqual("food", cfg.Crises[0].Conditions[0].Key);
+            Assert.AreEqual(Vibe.Core.Contracts.ConditionOp.LessOrEqual, cfg.Crises[0].Conditions[0].Op);
+            Assert.AreEqual(1d, cfg.Crises[0].Conditions[0].Threshold);
+            Assert.AreEqual("exhaustion", cfg.Crises[1].Id);
+            Assert.AreEqual("npc.n1.hunger", cfg.Crises[1].Conditions[0].Key,
+                "条件读完整键空间（npc.<id>.<key> 直接引用，不做投影）");
+        }
+
+        [Test]
+        public void LoadSimulation_Crises_UnknownField_Throws()
+        {
+            var ex = Assert.Throws<ContentLoadException>(
+                () => ContentLoader.LoadSimulation(
+                    @"{""version"":1,""ticksPerGameHour"":1,""passiveEffects"":[],
+                       ""agents"":[{""id"":""n1"",""localKeys"":[],""goalIds"":[""g""]}],
+                       ""crises"":[{""id"":""famine"",""severity"":3,
+                                    ""conditions"":[{""key"":""food"",""threshold"":1}]}]}"));
+            StringAssert.Contains("未知字段 'severity'", ex.Message);
+        }
+
+        [Test]
+        public void LoadSimulation_Crises_DuplicateId_Throws()
+        {
+            var ex = Assert.Throws<ContentLoadException>(
+                () => ContentLoader.LoadSimulation(
+                    @"{""version"":1,""ticksPerGameHour"":1,""passiveEffects"":[],
+                       ""agents"":[{""id"":""n1"",""localKeys"":[],""goalIds"":[""g""]}],
+                       ""crises"":[{""id"":""famine"",""conditions"":[{""key"":""food"",""threshold"":1}]},
+                                   {""id"":""famine"",""conditions"":[{""key"":""wood"",""threshold"":1}]}]}"));
+            StringAssert.Contains("重复", ex.Message);
+        }
+
+        [Test]
+        public void LoadSimulation_Crises_EmptyConditions_Throws()
+        {
+            var ex = Assert.Throws<ContentLoadException>(
+                () => ContentLoader.LoadSimulation(
+                    @"{""version"":1,""ticksPerGameHour"":1,""passiveEffects"":[],
+                       ""agents"":[{""id"":""n1"",""localKeys"":[],""goalIds"":[""g""]}],
+                       ""crises"":[{""id"":""famine"",""conditions"":[]}]}"));
+            StringAssert.Contains("至少", ex.Message);
+        }
+
+        [Test]
+        public void LoadSimulation_Crises_NotArray_Throws()
+        {
+            var ex = Assert.Throws<ContentLoadException>(
+                () => ContentLoader.LoadSimulation(
+                    @"{""version"":1,""ticksPerGameHour"":1,""passiveEffects"":[],
+                       ""agents"":[{""id"":""n1"",""localKeys"":[],""goalIds"":[""g""]}],
+                       ""crises"":{""id"":""famine""}}"));
+            StringAssert.Contains("必须是数组", ex.Message);
+        }
+
         // ── M1 场景四件套在盘可加载 ─────────────────────────────
 
         [Test]

@@ -16,7 +16,13 @@ namespace Vibe.Core.Contracts
         AgentExecuted,
 
         /// <summary>某 NPC 本 tick 闲置（原因见 <see cref="IdleReason"/>）。</summary>
-        AgentIdle
+        AgentIdle,
+
+        /// <summary>危机进入在场状态（条件由满足转为全满足的边沿；M3 据此驱动 LLM 规则调整）。</summary>
+        CrisisTriggered,
+
+        /// <summary>危机解除（在场 → 离场边沿；再次进入会重新 Triggered）。</summary>
+        CrisisResolved
     }
 
     /// <summary>闲置原因。None 仅作非闲置事件的占位默认值。</summary>
@@ -62,6 +68,9 @@ namespace Vibe.Core.Contracts
         /// <summary>行动 id；仅 AgentExecuted 有值，其余 null。</summary>
         public string ActionId { get; }
 
+        /// <summary>危机 id；仅 CrisisTriggered / CrisisResolved 有值，其余 null。</summary>
+        public string CrisisId { get; }
+
         /// <summary>新计划步数；仅 AgentReplanned 有意义。</summary>
         public int PlanSteps { get; }
 
@@ -72,7 +81,7 @@ namespace Vibe.Core.Contracts
         public IdleReason Idle { get; }
 
         private SimEvent(int tick, int day, SimEventType type,
-            string agentId, string goalId, string actionId,
+            string agentId, string goalId, string actionId, string crisisId,
             int planSteps, float planCost, IdleReason idle)
         {
             Tick = tick;
@@ -81,6 +90,7 @@ namespace Vibe.Core.Contracts
             AgentId = agentId;
             GoalId = goalId;
             ActionId = actionId;
+            CrisisId = crisisId;
             PlanSteps = planSteps;
             PlanCost = planCost;
             Idle = idle;
@@ -88,25 +98,35 @@ namespace Vibe.Core.Contracts
 
         /// <summary>惯用糖：游戏日开始。</summary>
         public static SimEvent DayBegan(int tick, int day)
-            => new SimEvent(tick, day, SimEventType.DayBegin, null, null, null, 0, 0f, IdleReason.None);
+            => new SimEvent(tick, day, SimEventType.DayBegin, null, null, null, null, 0, 0f, IdleReason.None);
 
         /// <summary>惯用糖：规则变更导致全部计划作废。</summary>
         public static SimEvent PlansInvalidated(int tick, int day)
-            => new SimEvent(tick, day, SimEventType.PlansInvalidated, null, null, null, 0, 0f, IdleReason.None);
+            => new SimEvent(tick, day, SimEventType.PlansInvalidated, null, null, null, null, 0, 0f, IdleReason.None);
 
         /// <summary>惯用糖：重规划成功（新计划服务的目标、步数、总代价）。</summary>
         public static SimEvent Replanned(int tick, int day, string agentId, string goalId,
             int planSteps, float planCost)
-            => new SimEvent(tick, day, SimEventType.AgentReplanned, agentId, goalId, null, planSteps, planCost,
-                IdleReason.None);
+            => new SimEvent(tick, day, SimEventType.AgentReplanned, agentId, goalId, null, null,
+                planSteps, planCost, IdleReason.None);
 
         /// <summary>惯用糖：执行了一个行动（效果已结算）。</summary>
         public static SimEvent Executed(int tick, int day, string agentId, string actionId)
-            => new SimEvent(tick, day, SimEventType.AgentExecuted, agentId, null, actionId, 0, 0f,
+            => new SimEvent(tick, day, SimEventType.AgentExecuted, agentId, null, actionId, null, 0, 0f,
                 IdleReason.None);
 
         /// <summary>惯用糖：闲置（GoalMet 时 goalId 为已满足的目标；Unplannable 时为 null）。</summary>
         public static SimEvent Idled(int tick, int day, string agentId, IdleReason reason, string goalId = null)
-            => new SimEvent(tick, day, SimEventType.AgentIdle, agentId, goalId, null, 0, 0f, reason);
+            => new SimEvent(tick, day, SimEventType.AgentIdle, agentId, goalId, null, null, 0, 0f, reason);
+
+        /// <summary>惯用糖：危机进入在场状态（边沿触发，持续在场不重发）。</summary>
+        public static SimEvent CrisisEntered(int tick, int day, string crisisId)
+            => new SimEvent(tick, day, SimEventType.CrisisTriggered, null, null, null, crisisId, 0, 0f,
+                IdleReason.None);
+
+        /// <summary>惯用糖：危机解除（再次进入会重新 Triggered）。</summary>
+        public static SimEvent CrisisLeft(int tick, int day, string crisisId)
+            => new SimEvent(tick, day, SimEventType.CrisisResolved, null, null, null, crisisId, 0, 0f,
+                IdleReason.None);
     }
 }

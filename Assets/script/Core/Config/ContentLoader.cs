@@ -60,10 +60,13 @@ namespace Vibe.Core.Config
             new HashSet<string> { "version", "tick", "day", "values" };
 
         private static readonly HashSet<string> SimulationFields =
-            new HashSet<string> { "version", "ticksPerGameHour", "passiveEffects", "agents" };
+            new HashSet<string> { "version", "ticksPerGameHour", "passiveEffects", "agents", "crises" };
 
         private static readonly HashSet<string> AgentFields =
             new HashSet<string> { "id", "localKeys", "goalIds" };
+
+        private static readonly HashSet<string> CrisisFields =
+            new HashSet<string> { "id", "conditions" };
 
         /// <summary>解析一份行动库（{version, actions:[…]}）。返回顺序与配置一致。</summary>
         public static IReadOnlyList<IAction> LoadActions(string json)
@@ -211,7 +214,32 @@ namespace Vibe.Core.Config
 
                 agents.Add(new AgentSpec(id, localKeys, goalIds));
             }
-            return new SimulationConfig(ticksPerGameHour, passiveEffects, agents);
+
+            // crises 为可选字段（v1 内向后兼容增补）：缺省 = 无危机监测
+            var crises = new List<CrisisSpec>();
+            if (root.Members.TryGetValue("crises", out var crisisList))
+            {
+                if (crisisList.Type != JsonType.Array)
+                    throw Fail($"顶层 crises 必须是数组（实际 {TypeName(crisisList)}）");
+
+                var seenCrisisIds = new HashSet<string>();
+                for (int i = 0; i < crisisList.Items.Count; i++)
+                {
+                    string path = $"crises[{i}]";
+                    var item = RequireObject(crisisList.Items[i], path);
+                    CheckKnownFields(item, CrisisFields, path);
+
+                    string id = RequireNonEmptyString(item, "id", path);
+                    var conditions = ParseConditionList(item, "conditions", $"crises[{i}] ('{id}')");
+                    if (conditions.Count == 0)
+                        throw Fail($"{path} ('{id}')：conditions 至少要有一条（空条件的危机恒在场，无意义）");
+
+                    if (!seenCrisisIds.Add(id))
+                        throw Fail($"{path}：id '{id}' 在文件内重复（id 必须唯一）");
+                    crises.Add(new CrisisSpec(id, conditions));
+                }
+            }
+            return new SimulationConfig(ticksPerGameHour, passiveEffects, agents, crises);
         }
 
         // —— 顶层结构 ——
