@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="158" result="Passed" total="158" passed="158" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:33Z" duration="0.271103">
+  <test-suite type="TestSuite" id="1175" name="vibe Project" fullname="vibe Project" runstate="Runnable" testcasecount="158" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:33Z" duration="0.271103" total="158" passed="158" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1346" name="Vibe.Core.Tests.dll" fullname="/Volumes/workspace/UnityProject/vibe Project/Library/ScriptAssemblies/Vibe.Core.Tests.dll" runstate="Runnable" testcasecount="158" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:33Z" duration="0.242880" total="158" passed="158" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="71829" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+      </properties>
+      <test-suite type="TestSuite" id="1347" name="Vibe" fullname="Vibe" runstate="Runnable" testcasecount="158" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:33Z" duration="0.241031" total="158" passed="158" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1348" name="Core" fullname="Vibe.Core" runstate="Runnable" testcasecount="158" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:33Z" duration="0.239643" total="158" passed="158" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1349" name="Tests" fullname="Vibe.Core.Tests" runstate="Runnable" testcasecount="158" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:33Z" duration="0.238257" total="158" passed="158" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1181" name="ContentLoadingTests" fullname="Vibe.Core.Tests.ContentLoadingTests" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.136059" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1203" name="ExampleFiles_OnDisk_LoadCleanly" fullname="Vibe.Core.Tests.ContentLoadingTests.ExampleFiles_OnDisk_LoadCleanly" methodname="ExampleFiles_OnDisk_LoadCleanly" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1320309332" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.034352" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1188" name="LoadActions_DuplicateId_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_DuplicateId_Throws" methodname="LoadActions_DuplicateId_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1118883826" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.002681" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1194" name="LoadActions_EmptyLibrary_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_EmptyLibrary_Throws" methodname="LoadActions_EmptyLibrary_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1929107973" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.001489" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1185" name="LoadActions_EmptyPreconditionsAllowed_EmptyEffectsAllowed" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_EmptyPreconditionsAllowed_EmptyEffectsAllowed" methodname="LoadActions_EmptyPreconditionsAllowed_EmptyEffectsAllowed" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1662611178" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000598" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1182" name="LoadActions_Example_ParsesAllInOrder" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_Example_ParsesAllInOrder" methodname="LoadActions_Example_ParsesAllInOrder" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="730236532" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000331" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1200" name="LoadActions_JsonSyntaxError_PropagatesParseException" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_JsonSyntaxError_PropagatesParseException" methodname="LoadActions_JsonSyntaxError_PropagatesParseException" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1625776435" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000218" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1191" name="LoadActions_MissingRequiredField_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_MissingRequiredField_Throws" methodname="LoadActions_MissingRequiredField_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1323736217" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000150" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1193" name="LoadActions_MissingVersion_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_MissingVersion_Throws" methodname="LoadActions_MissingVersion_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1724769031" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000112" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1189" name="LoadActions_NegativeBaseCost_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_NegativeBaseCost_Throws" methodname="LoadActions_NegativeBaseCost_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1503006377" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000280" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1201" name="LoadActions_NullInput_ThrowsArgumentNull" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_NullInput_ThrowsArgumentNull" methodname="LoadActions_NullInput_ThrowsArgumentNull" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1880225309" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000162" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1196" name="LoadActions_NullOperator_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_NullOperator_Throws" methodname="LoadActions_NullOperator_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1450003732" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000336" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1184" name="LoadActions_OperatorFullSet_MapsToEnums" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_OperatorFullSet_MapsToEnums" methodname="LoadActions_OperatorFullSet_MapsToEnums" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="867248331" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.001354" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1183" name="LoadActions_OperatorsDefaultToBaseline" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_OperatorsDefaultToBaseline" methodname="LoadActions_OperatorsDefaultToBaseline" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="511238752" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000270" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1190" name="LoadActions_UnknownField_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_UnknownField_Throws" methodname="LoadActions_UnknownField_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1970391443" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000190" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1195" name="LoadActions_UnknownOperator_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_UnknownOperator_Throws" methodname="LoadActions_UnknownOperator_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1078734942" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000289" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1197" name="LoadActions_WrongFieldType_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_WrongFieldType_Throws" methodname="LoadActions_WrongFieldType_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1876456376" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000168" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1192" name="LoadActions_WrongVersion_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadActions_WrongVersion_Throws" methodname="LoadActions_WrongVersion_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1522738036" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000123" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1202" name="LoadedAction_WorksAgainstWorldState" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadedAction_WorksAgainstWorldState" methodname="LoadedAction_WorksAgainstWorldState" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="1250755787" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.001723" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1199" name="LoadGoals_DuplicateId_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadGoals_DuplicateId_Throws" methodname="LoadGoals_DuplicateId_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="700564183" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000142" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1198" name="LoadGoals_EmptyConditions_Throws" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadGoals_EmptyConditions_Throws" methodname="LoadGoals_EmptyConditions_Throws" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="2015637949" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000133" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1186" name="LoadGoals_Example_ParsesAllInOrder" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadGoals_Example_ParsesAllInOrder" methodname="LoadGoals_Example_ParsesAllInOrder" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="464339068" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000169" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1187" name="LoadGoals_NegativePriorityAllowed" fullname="Vibe.Core.Tests.ContentLoadingTests.LoadGoals_NegativePriorityAllowed" methodname="LoadGoals_NegativePriorityAllowed" classname="Vibe.Core.Tests.ContentLoadingTests" runstate="Runnable" seed="177373688" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000081" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1204" name="MiniJsonTests" fullname="Vibe.Core.Tests.MiniJsonTests" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.007645" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1219" name="Parse_BadLiteral_Throws" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_BadLiteral_Throws" methodname="Parse_BadLiteral_Throws" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="2134308683" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000275" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1225" name="Parse_CrlfCounted_AsSingleNewline" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_CrlfCounted_AsSingleNewline" methodname="Parse_CrlfCounted_AsSingleNewline" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1302799594" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000131" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1222" name="Parse_DepthBeyondLimit_Throws" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_DepthBeyondLimit_Throws" methodname="Parse_DepthBeyondLimit_Throws" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1792094815" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000603" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1218" name="Parse_DuplicateObjectKey_Throws" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_DuplicateObjectKey_Throws" methodname="Parse_DuplicateObjectKey_Throws" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="373298149" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000169" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1215" name="Parse_EmptyOrWhitespaceOnly_Throws" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_EmptyOrWhitespaceOnly_Throws" methodname="Parse_EmptyOrWhitespaceOnly_Throws" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="556452941" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000188" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1224" name="Parse_Error_ReportsLineAndColumn" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_Error_ReportsLineAndColumn" methodname="Parse_Error_ReportsLineAndColumn" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="915009254" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000154" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1223" name="Parse_LeadingUtf8Bom_Tolerated" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_LeadingUtf8Bom_Tolerated" methodname="Parse_LeadingUtf8Bom_Tolerated" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1603815003" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000150" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1216" name="Parse_LeadingZeroNumber_Throws" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_LeadingZeroNumber_Throws" methodname="Parse_LeadingZeroNumber_Throws" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="91798758" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000139" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1206" name="Parse_Literals_TrueFalseNull" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_Literals_TrueFalseNull" methodname="Parse_Literals_TrueFalseNull" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1381203203" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000205" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1217" name="Parse_MalformedNumber_Throws" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_MalformedNumber_Throws" methodname="Parse_MalformedNumber_Throws" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1938144472" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000169" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1220" name="Parse_MalformedStructure_Throws" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_MalformedStructure_Throws" methodname="Parse_MalformedStructure_Throws" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1134371975" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000194" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1210" name="Parse_Nested_StructureAndOrderPreserved" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_Nested_StructureAndOrderPreserved" methodname="Parse_Nested_StructureAndOrderPreserved" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="283337974" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000103" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1226" name="Parse_NullInput_ThrowsArgumentNull" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_NullInput_ThrowsArgumentNull" methodname="Parse_NullInput_ThrowsArgumentNull" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1945879667" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000108" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1205" name="Parse_Numbers_IntFractionExponentNegative" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_Numbers_IntFractionExponentNegative" methodname="Parse_Numbers_IntFractionExponentNegative" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="385526302" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000140" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1207" name="Parse_String_Escapes" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_String_Escapes" methodname="Parse_String_Escapes" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="560352819" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000125" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1221" name="Parse_String_Issues_Throw" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_String_Issues_Throw" methodname="Parse_String_Issues_Throw" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1805779029" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000307" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1208" name="Parse_String_UnicodeEscape_And_SurrogatePair" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_String_UnicodeEscape_And_SurrogatePair" methodname="Parse_String_UnicodeEscape_And_SurrogatePair" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1088969029" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000158" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1214" name="Parse_TrailingGarbage_Throws" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_TrailingGarbage_Throws" methodname="Parse_TrailingGarbage_Throws" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1441457098" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000145" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1209" name="Parse_Whitespace_AroundAndInside_IsSkipped" fullname="Vibe.Core.Tests.MiniJsonTests.Parse_Whitespace_AroundAndInside_IsSkipped" methodname="Parse_Whitespace_AroundAndInside_IsSkipped" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="509192745" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000070" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1211" name="TryGetMember_AbsentKeyOrNonObject_ReturnsFalse" fullname="Vibe.Core.Tests.MiniJsonTests.TryGetMember_AbsentKeyOrNonObject_ReturnsFalse" methodname="TryGetMember_AbsentKeyOrNonObject_ReturnsFalse" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="47034038" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000197" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1212" name="TryGetMember_ExplicitNullValue_ReturnsTrueWithNullValue" fullname="Vibe.Core.Tests.MiniJsonTests.TryGetMember_ExplicitNullValue_ReturnsTrueWithNullValue" methodname="TryGetMember_ExplicitNullValue_ReturnsTrueWithNullValue" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="1092902709" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000060" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1213" name="TypedAccessors_WrongType_Throw" fullname="Vibe.Core.Tests.MiniJsonTests.TypedAccessors_WrongType_Throw" methodname="TypedAccessors_WrongType_Throw" classname="Vibe.Core.Tests.MiniJsonTests" runstate="Runnable" seed="713087716" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:32Z" duration="0.000441" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1227" name="PlannerTests" fullname="Vibe.Core.Tests.PlannerTests" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" testcasecount="33" result="Passed" start-time="2026-10-04 01:10:32Z" end-time="2026-10-04 01:10:33Z" duration="0.020366" total="33" passed="33" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1251" name="Ctor_InvalidBudgets_Throw" fullname="Vibe.Core.Tests.PlannerTests.Ctor_InvalidBudgets_Throw" methodname="Ctor_InvalidBudgets_Throw" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1431290716" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000356" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1258" name="Heap_CustomComparison_Respected" fullname="Vibe.Core.Tests.PlannerTests.Heap_CustomComparison_Respected" methodname="Heap_CustomComparison_Respected" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="583823891" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000517" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1256" name="Heap_Duplicates_AllRetained" fullname="Vibe.Core.Tests.PlannerTests.Heap_Duplicates_AllRetained" methodname="Heap_Duplicates_AllRetained" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="950209890" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000401" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1257" name="Heap_InterleavedPushPop_AlwaysMinNext" fullname="Vibe.Core.Tests.PlannerTests.Heap_InterleavedPushPop_AlwaysMinNext" methodname="Heap_InterleavedPushPop_AlwaysMinNext" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1943212549" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000139" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1260" name="Heap_LargeSequence_RemainsOrdered" fullname="Vibe.Core.Tests.PlannerTests.Heap_LargeSequence_RemainsOrdered" methodname="Heap_LargeSequence_RemainsOrdered" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="408413970" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000495" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1259" name="Heap_NullComparison_Throws" fullname="Vibe.Core.Tests.PlannerTests.Heap_NullComparison_Throws" methodname="Heap_NullComparison_Throws" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="417310632" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000130" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1254" name="Heap_Peek_DoesNotRemove" fullname="Vibe.Core.Tests.PlannerTests.Heap_Peek_DoesNotRemove" methodname="Heap_Peek_DoesNotRemove" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1276388813" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000143" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1255" name="Heap_PopEmpty_Throws" fullname="Vibe.Core.Tests.PlannerTests.Heap_PopEmpty_Throws" methodname="Heap_PopEmpty_Throws" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="436515059" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000161" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1253" name="Heap_PushPop_AscendingOrder" fullname="Vibe.Core.Tests.PlannerTests.Heap_PushPop_AscendingOrder" methodname="Heap_PushPop_AscendingOrder" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="963958894" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000185" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1252" name="Plan_AgainstLoadedConfigs_EndToEnd" fullname="Vibe.Core.Tests.PlannerTests.Plan_AgainstLoadedConfigs_EndToEnd" methodname="Plan_AgainstLoadedConfigs_EndToEnd" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="2092899871" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.003074" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1235" name="Plan_AllGoalsAlreadyMet_EmptyPlanForTopGoal" fullname="Vibe.Core.Tests.PlannerTests.Plan_AllGoalsAlreadyMet_EmptyPlanForTopGoal" methodname="Plan_AllGoalsAlreadyMet_EmptyPlanForTopGoal" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="939357160" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000630" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1237" name="Plan_AllGoalsUnreachable_ReturnsNull" fullname="Vibe.Core.Tests.PlannerTests.Plan_AllGoalsUnreachable_ReturnsNull" methodname="Plan_AllGoalsUnreachable_ReturnsNull" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1116508614" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.001222" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1231" name="Plan_ApplyingStepsToClone_ReachesGoal" fullname="Vibe.Core.Tests.PlannerTests.Plan_ApplyingStepsToClone_ReachesGoal" methodname="Plan_ApplyingStepsToClone_ReachesGoal" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="667771498" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000895" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1240" name="Plan_CostMultiplier_FlipsPlanToAlternativeChain" fullname="Vibe.Core.Tests.PlannerTests.Plan_CostMultiplier_FlipsPlanToAlternativeChain" methodname="Plan_CostMultiplier_FlipsPlanToAlternativeChain" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1403502795" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.001858" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1249" name="Plan_DepthCap_BlocksPlansBeyondLimit" fullname="Vibe.Core.Tests.PlannerTests.Plan_DepthCap_BlocksPlansBeyondLimit" methodname="Plan_DepthCap_BlocksPlansBeyondLimit" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1220242392" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000193" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1244" name="Plan_DoesNotMutateStartState" fullname="Vibe.Core.Tests.PlannerTests.Plan_DoesNotMutateStartState" methodname="Plan_DoesNotMutateStartState" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1081128497" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000457" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1238" name="Plan_EmptyGoalList_ReturnsNull" fullname="Vibe.Core.Tests.PlannerTests.Plan_EmptyGoalList_ReturnsNull" methodname="Plan_EmptyGoalList_ReturnsNull" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1424319703" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000057" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1239" name="Plan_EqualPriorities_TriedInInputOrder" fullname="Vibe.Core.Tests.PlannerTests.Plan_EqualPriorities_TriedInInputOrder" methodname="Plan_EqualPriorities_TriedInInputOrder" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="810514811" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000277" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1233" name="Plan_GoalAlreadyMet_ReturnsEmptyPlanZeroCost" fullname="Vibe.Core.Tests.PlannerTests.Plan_GoalAlreadyMet_ReturnsEmptyPlanZeroCost" methodname="Plan_GoalAlreadyMet_ReturnsEmptyPlanZeroCost" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="403531188" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000134" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1248" name="Plan_IterationBudgetExhausted_ReturnsNull" fullname="Vibe.Core.Tests.PlannerTests.Plan_IterationBudgetExhausted_ReturnsNull" methodname="Plan_IterationBudgetExhausted_ReturnsNull" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="266939809" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000151" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1228" name="Plan_MarketScenario_PicksCheapestChain" fullname="Vibe.Core.Tests.PlannerTests.Plan_MarketScenario_PicksCheapestChain" methodname="Plan_MarketScenario_PicksCheapestChain" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="2039738375" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000387" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1232" name="Plan_MultiConditionGoal_AllConditionsMet" fullname="Vibe.Core.Tests.PlannerTests.Plan_MultiConditionGoal_AllConditionsMet" methodname="Plan_MultiConditionGoal_AllConditionsMet" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="315345211" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000269" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1241" name="Plan_MultiplierMissingKey_TreatedAsOne" fullname="Vibe.Core.Tests.PlannerTests.Plan_MultiplierMissingKey_TreatedAsOne" methodname="Plan_MultiplierMissingKey_TreatedAsOne" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="973862223" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000400" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1243" name="Plan_NegativeMultiplier_ClampedToZero" fullname="Vibe.Core.Tests.PlannerTests.Plan_NegativeMultiplier_ClampedToZero" methodname="Plan_NegativeMultiplier_ClampedToZero" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="637987797" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000144" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1229" name="Plan_NoMoney_FlipsToForestChain" fullname="Vibe.Core.Tests.PlannerTests.Plan_NoMoney_FlipsToForestChain" methodname="Plan_NoMoney_FlipsToForestChain" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="199941158" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000665" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1247" name="Plan_NoOpEffectAction_TerminatesViaFingerprintDedup" fullname="Vibe.Core.Tests.PlannerTests.Plan_NoOpEffectAction_TerminatesViaFingerprintDedup" methodname="Plan_NoOpEffectAction_TerminatesViaFingerprintDedup" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="111777705" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000172" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1230" name="Plan_NoTravelAction_UnreachableReturnsNull" fullname="Vibe.Core.Tests.PlannerTests.Plan_NoTravelAction_UnreachableReturnsNull" methodname="Plan_NoTravelAction_UnreachableReturnsNull" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="2009045616" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000610" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1246" name="Plan_NullArguments_Throw" fullname="Vibe.Core.Tests.PlannerTests.Plan_NullArguments_Throw" methodname="Plan_NullArguments_Throw" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="479001038" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000197" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1242" name="Plan_NullRules_SamePlanAsDefault" fullname="Vibe.Core.Tests.PlannerTests.Plan_NullRules_SamePlanAsDefault" methodname="Plan_NullRules_SamePlanAsDefault" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="195332346" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000638" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1245" name="Plan_SameInput_ProducesSamePlan" fullname="Vibe.Core.Tests.PlannerTests.Plan_SameInput_ProducesSamePlan" methodname="Plan_SameInput_ProducesSamePlan" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="763720286" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000277" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1234" name="Plan_SatisfiedGoal_Skipped_FallsToUnmet" fullname="Vibe.Core.Tests.PlannerTests.Plan_SatisfiedGoal_Skipped_FallsToUnmet" methodname="Plan_SatisfiedGoal_Skipped_FallsToUnmet" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1275130243" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000177" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1236" name="Plan_UnreachableHighGoal_FallsToNextReachable" fullname="Vibe.Core.Tests.PlannerTests.Plan_UnreachableHighGoal_FallsToNextReachable" methodname="Plan_UnreachableHighGoal_FallsToNextReachable" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="700603921" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000223" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1250" name="Plan_ZeroCostAction_DoesNotLoop" fullname="Vibe.Core.Tests.PlannerTests.Plan_ZeroCostAction_DoesNotLoop" methodname="Plan_ZeroCostAction_DoesNotLoop" classname="Vibe.Core.Tests.PlannerTests" runstate="Runnable" seed="1117489418" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000111" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1261" name="SimulationConfigTests" fullname="Vibe.Core.Tests.SimulationConfigTests" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.006483" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1279" name="LoadSimulation_BadStringListEntries_Throw" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_BadStringListEntries_Throw" methodname="LoadSimulation_BadStringListEntries_Throw" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1740434505" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000680" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1276" name="LoadSimulation_DuplicateAgentId_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_DuplicateAgentId_Throws" methodname="LoadSimulation_DuplicateAgentId_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="707793734" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000213" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1275" name="LoadSimulation_EmptyAgents_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_EmptyAgents_Throws" methodname="LoadSimulation_EmptyAgents_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="2126552976" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000086" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1277" name="LoadSimulation_EmptyGoalIds_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_EmptyGoalIds_Throws" methodname="LoadSimulation_EmptyGoalIds_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1344975177" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000102" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1271" name="LoadSimulation_EmptyPassiveEffects_Allowed" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_EmptyPassiveEffects_Allowed" methodname="LoadSimulation_EmptyPassiveEffects_Allowed" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1777902404" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000099" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1278" name="LoadSimulation_NpcPrefixedLocalKey_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_NpcPrefixedLocalKey_Throws" methodname="LoadSimulation_NpcPrefixedLocalKey_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="2081891420" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000107" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1280" name="LoadSimulation_NullInput_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_NullInput_Throws" methodname="LoadSimulation_NullInput_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="374367584" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000071" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1270" name="LoadSimulation_ParsesAllFields_InOrder" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_ParsesAllFields_InOrder" methodname="LoadSimulation_ParsesAllFields_InOrder" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1901941655" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000476" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1274" name="LoadSimulation_TicksPerGameHour_BadValues_Throw" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_TicksPerGameHour_BadValues_Throw" methodname="LoadSimulation_TicksPerGameHour_BadValues_Throw" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="888233078" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000188" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1272" name="LoadSimulation_UnknownField_Throws_TopLevelAndAgent" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_UnknownField_Throws_TopLevelAndAgent" methodname="LoadSimulation_UnknownField_Throws_TopLevelAndAgent" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1650392276" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000149" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1273" name="LoadSimulation_WrongVersion_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadSimulation_WrongVersion_Throws" methodname="LoadSimulation_WrongVersion_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1713911380" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000081" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1266" name="LoadWorldState_FractionalTick_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadWorldState_FractionalTick_Throws" methodname="LoadWorldState_FractionalTick_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1642098234" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000228" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1265" name="LoadWorldState_MissingField_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadWorldState_MissingField_Throws" methodname="LoadWorldState_MissingField_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="51477287" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000072" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1268" name="LoadWorldState_NonNumberValue_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadWorldState_NonNumberValue_Throws" methodname="LoadWorldState_NonNumberValue_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1844119084" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000156" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1269" name="LoadWorldState_NullInput_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadWorldState_NullInput_Throws" methodname="LoadWorldState_NullInput_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="812080964" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000061" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1262" name="LoadWorldState_ParsesAllFields" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadWorldState_ParsesAllFields" methodname="LoadWorldState_ParsesAllFields" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="975976456" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000098" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1267" name="LoadWorldState_TickBelowZero_DayBelowOne_Throw" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadWorldState_TickBelowZero_DayBelowOne_Throw" methodname="LoadWorldState_TickBelowZero_DayBelowOne_Throw" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="605666302" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000104" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1263" name="LoadWorldState_UnknownField_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadWorldState_UnknownField_Throws" methodname="LoadWorldState_UnknownField_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="17429504" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000086" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1264" name="LoadWorldState_WrongVersion_Throws" fullname="Vibe.Core.Tests.SimulationConfigTests.LoadWorldState_WrongVersion_Throws" methodname="LoadWorldState_WrongVersion_Throws" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="865489353" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000076" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1281" name="M1ScenarioFiles_OnDisk_LoadCleanly" fullname="Vibe.Core.Tests.SimulationConfigTests.M1ScenarioFiles_OnDisk_LoadCleanly" methodname="M1ScenarioFiles_OnDisk_LoadCleanly" classname="Vibe.Core.Tests.SimulationConfigTests" runstate="Runnable" seed="1333628915" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.001496" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1282" name="SimulationTests" fullname="Vibe.Core.Tests.SimulationTests" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" testcasecount="29" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.058901" total="29" passed="29" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1300" name="AgentsActInConfigOrder_LaterSeesEarlierEffects" fullname="Vibe.Core.Tests.SimulationTests.AgentsActInConfigOrder_LaterSeesEarlierEffects" methodname="AgentsActInConfigOrder_LaterSeesEarlierEffects" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="328308155" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.003518" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1285" name="Ctor_ClonesInitialWorld" fullname="Vibe.Core.Tests.SimulationTests.Ctor_ClonesInitialWorld" methodname="Ctor_ClonesInitialWorld" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="147017087" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000217" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1284" name="Ctor_NullArguments_Throw" fullname="Vibe.Core.Tests.SimulationTests.Ctor_NullArguments_Throw" methodname="Ctor_NullArguments_Throw" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="187247697" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000342" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1283" name="Ctor_UnknownGoalReference_Throws" fullname="Vibe.Core.Tests.SimulationTests.Ctor_UnknownGoalReference_Throws" methodname="Ctor_UnknownGoalReference_Throws" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="1455564962" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000229" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1302" name="Dispose_UnsubscribesFromRules" fullname="Vibe.Core.Tests.SimulationTests.Dispose_UnsubscribesFromRules" methodname="Dispose_UnsubscribesFromRules" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="985849107" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000627" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1308" name="Emitted_PushesInAppendOrder_AndUnsubscribeStops" fullname="Vibe.Core.Tests.SimulationTests.Emitted_PushesInAppendOrder_AndUnsubscribeStops" methodname="Emitted_PushesInAppendOrder_AndUnsubscribeStops" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="156830617" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.001120" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1306" name="Events_DayBegin_AtBoundary_PrecedesAgentEventsOfThatTick" fullname="Vibe.Core.Tests.SimulationTests.Events_DayBegin_AtBoundary_PrecedesAgentEventsOfThatTick" methodname="Events_DayBegin_AtBoundary_PrecedesAgentEventsOfThatTick" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="747773923" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.001878" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1304" name="Events_IdleGoalMet_CarriesMetGoalId" fullname="Vibe.Core.Tests.SimulationTests.Events_IdleGoalMet_CarriesMetGoalId" methodname="Events_IdleGoalMet_CarriesMetGoalId" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="2105538863" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000407" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1305" name="Events_IdleUnplannable_HasNoGoal" fullname="Vibe.Core.Tests.SimulationTests.Events_IdleUnplannable_HasNoGoal" methodname="Events_IdleUnplannable_HasNoGoal" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="814820682" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000263" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1307" name="Events_PlansInvalidated_OnRulesChanged_BeforeReplan" fullname="Vibe.Core.Tests.SimulationTests.Events_PlansInvalidated_OnRulesChanged_BeforeReplan" methodname="Events_PlansInvalidated_OnRulesChanged_BeforeReplan" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="1793937843" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000437" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1303" name="Events_ReplanThenExecute_CarriesFieldsInOrder" fullname="Vibe.Core.Tests.SimulationTests.Events_ReplanThenExecute_CarriesFieldsInOrder" methodname="Events_ReplanThenExecute_CarriesFieldsInOrder" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="675326375" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000395" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1298" name="Idle_WhenAllGoalsMet_ThenResumesWhenPressureBuilds" fullname="Vibe.Core.Tests.SimulationTests.Idle_WhenAllGoalsMet_ThenResumesWhenPressureBuilds" methodname="Idle_WhenAllGoalsMet_ThenResumesWhenPressureBuilds" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="877270368" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000296" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1310" name="M1Scenario_EventCounts_MatchBehaviorLog" fullname="Vibe.Core.Tests.SimulationTests.M1Scenario_EventCounts_MatchBehaviorLog" methodname="M1Scenario_EventCounts_MatchBehaviorLog" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="409149512" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.005844" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1311" name="M1Scenario_Survives24GameHours" fullname="Vibe.Core.Tests.SimulationTests.M1Scenario_Survives24GameHours" methodname="M1Scenario_Survives24GameHours" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="1636504149" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.013697" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1288" name="PassiveEffects_AppliedEveryTick" fullname="Vibe.Core.Tests.SimulationTests.PassiveEffects_AppliedEveryTick" methodname="PassiveEffects_AppliedEveryTick" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="300152569" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000336" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1294" name="Projection_GoalReadsNpcKeyThroughLocalKey" fullname="Vibe.Core.Tests.SimulationTests.Projection_GoalReadsNpcKeyThroughLocalKey" methodname="Projection_GoalReadsNpcKeyThroughLocalKey" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="995283279" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000365" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1296" name="Replan_WhenNextStepPreconditionInvalidated" fullname="Vibe.Core.Tests.SimulationTests.Replan_WhenNextStepPreconditionInvalidated" methodname="Replan_WhenNextStepPreconditionInvalidated" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="1269086308" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000583" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1295" name="Replan_WhenPlanExhausted_AndRecordsInLog" fullname="Vibe.Core.Tests.SimulationTests.Replan_WhenPlanExhausted_AndRecordsInLog" methodname="Replan_WhenPlanExhausted_AndRecordsInLog" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="111692431" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000203" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1297" name="Replan_WhenRulesChanged" fullname="Vibe.Core.Tests.SimulationTests.Replan_WhenRulesChanged" methodname="Replan_WhenRulesChanged" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="1185987915" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000569" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1286" name="Run_NegativeTicks_Throws" fullname="Vibe.Core.Tests.SimulationTests.Run_NegativeTicks_Throws" methodname="Run_NegativeTicks_Throws" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="454198914" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000347" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1309" name="SameInput_ProducesIdenticalEventStream" fullname="Vibe.Core.Tests.SimulationTests.SameInput_ProducesIdenticalEventStream" methodname="SameInput_ProducesIdenticalEventStream" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="1181845702" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.012740" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1301" name="SameInput_ProducesIdenticalTrace" fullname="Vibe.Core.Tests.SimulationTests.SameInput_ProducesIdenticalTrace" methodname="SameInput_ProducesIdenticalTrace" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="603708981" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.007777" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1290" name="Settlement_ConsumptionMultiplier_ScalesNegativeAdd" fullname="Vibe.Core.Tests.SimulationTests.Settlement_ConsumptionMultiplier_ScalesNegativeAdd" methodname="Settlement_ConsumptionMultiplier_ScalesNegativeAdd" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="1106529945" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000336" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1292" name="Settlement_NegativeMultiplier_ClampedToZero" fullname="Vibe.Core.Tests.SimulationTests.Settlement_NegativeMultiplier_ClampedToZero" methodname="Settlement_NegativeMultiplier_ClampedToZero" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="328505660" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000267" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1289" name="Settlement_ProductionMultiplier_ScalesPositiveAdd" fullname="Vibe.Core.Tests.SimulationTests.Settlement_ProductionMultiplier_ScalesPositiveAdd" methodname="Settlement_ProductionMultiplier_ScalesPositiveAdd" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="2063924191" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000156" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1291" name="Settlement_SetOp_BypassesChannels" fullname="Vibe.Core.Tests.SimulationTests.Settlement_SetOp_BypassesChannels" methodname="Settlement_SetOp_BypassesChannels" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="277443488" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000158" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1287" name="Step_AdvancesTickHourDay" fullname="Vibe.Core.Tests.SimulationTests.Step_AdvancesTickHourDay" methodname="Step_AdvancesTickHourDay" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="2031210095" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000509" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1299" name="Unplannable_IdlesEveryTick" fullname="Vibe.Core.Tests.SimulationTests.Unplannable_IdlesEveryTick" methodname="Unplannable_IdlesEveryTick" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="79341033" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000187" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1293" name="WriteBack_LocalKeysGoToNpcNamespace_SharedStayBare" fullname="Vibe.Core.Tests.SimulationTests.WriteBack_LocalKeysGoToNpcNamespace_SharedStayBare" methodname="WriteBack_LocalKeysGoToNpcNamespace_SharedStayBare" classname="Vibe.Core.Tests.SimulationTests" runstate="Runnable" seed="1755491781" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000242" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1312" name="WorldStateTests" fullname="Vibe.Core.Tests.WorldStateTests" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" testcasecount="32" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.005960" total="32" passed="32" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1335" name="Apply_Add_MissingKeyStartsFromZero_ThenAccumulates" fullname="Vibe.Core.Tests.WorldStateTests.Apply_Add_MissingKeyStartsFromZero_ThenAccumulates" methodname="Apply_Add_MissingKeyStartsFromZero_ThenAccumulates" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1089382126" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000090" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1336" name="Apply_Add_NegativeAmount_Consumes" fullname="Vibe.Core.Tests.WorldStateTests.Apply_Add_NegativeAmount_Consumes" methodname="Apply_Add_NegativeAmount_Consumes" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1879418519" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000065" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1340" name="Apply_MixedEffects_AppliedInOrder" fullname="Vibe.Core.Tests.WorldStateTests.Apply_MixedEffects_AppliedInOrder" methodname="Apply_MixedEffects_AppliedInOrder" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1662707957" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000076" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1339" name="Apply_MultiplyBy_ExistingKey_Multiplies" fullname="Vibe.Core.Tests.WorldStateTests.Apply_MultiplyBy_ExistingKey_Multiplies" methodname="Apply_MultiplyBy_ExistingKey_Multiplies" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1160637080" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000076" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1338" name="Apply_MultiplyBy_MissingKey_StaysMissing" fullname="Vibe.Core.Tests.WorldStateTests.Apply_MultiplyBy_MissingKey_StaysMissing" methodname="Apply_MultiplyBy_MissingKey_StaysMissing" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="608998828" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000065" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1337" name="Apply_Set_OverwritesAbsolute" fullname="Vibe.Core.Tests.WorldStateTests.Apply_Set_OverwritesAbsolute" methodname="Apply_Set_OverwritesAbsolute" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1250463657" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000068" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1341" name="Clone_IsIndependent_BothDirections" fullname="Vibe.Core.Tests.WorldStateTests.Clone_IsIndependent_BothDirections" methodname="Clone_IsIndependent_BothDirections" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1841895682" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000068" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1342" name="Clone_PreservesTickAndDay" fullname="Vibe.Core.Tests.WorldStateTests.Clone_PreservesTickAndDay" methodname="Clone_PreservesTickAndDay" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1826273737" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000054" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1317" name="Constructor_CopiesSourceDictionary" fullname="Vibe.Core.Tests.WorldStateTests.Constructor_CopiesSourceDictionary" methodname="Constructor_CopiesSourceDictionary" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1490977591" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000056" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1344" name="Fingerprint_DifferentValues_ProduceDifferentSignatures" fullname="Vibe.Core.Tests.WorldStateTests.Fingerprint_DifferentValues_ProduceDifferentSignatures" methodname="Fingerprint_DifferentValues_ProduceDifferentSignatures" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1613047969" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000113" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1343" name="Fingerprint_IgnoresKeyInsertionOrder" fullname="Vibe.Core.Tests.WorldStateTests.Fingerprint_IgnoresKeyInsertionOrder" methodname="Fingerprint_IgnoresKeyInsertionOrder" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="366209720" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000064" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1345" name="Fingerprint_IgnoresTickAndDay" fullname="Vibe.Core.Tests.WorldStateTests.Fingerprint_IgnoresTickAndDay" methodname="Fingerprint_IgnoresTickAndDay" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="487637486" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000056" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1313" name="Get_MissingKey_ReturnsZero" fullname="Vibe.Core.Tests.WorldStateTests.Get_MissingKey_ReturnsZero" methodname="Get_MissingKey_ReturnsZero" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="2009704587" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000046" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1316" name="Keys_ReturnsOnlyWrittenKeys" fullname="Vibe.Core.Tests.WorldStateTests.Keys_ReturnsOnlyWrittenKeys" methodname="Keys_ReturnsOnlyWrittenKeys" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1984491291" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000142" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1334" name="Meets_AllConditionsMustHold" fullname="Vibe.Core.Tests.WorldStateTests.Meets_AllConditionsMustHold" methodname="Meets_AllConditionsMustHold" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1289699947" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000065" asserts="0">
+                <properties />
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1332" name="Meets_EachOperator" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.002283" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1320" name="Meets_EachOperator(3.0d,GreaterOrEqual,3.0d,True)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(3.0d,GreaterOrEqual,3.0d,True)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1906592176" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000444" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1321" name="Meets_EachOperator(2.9d,GreaterOrEqual,3.0d,False)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(2.9d,GreaterOrEqual,3.0d,False)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="2006473910" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000038" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1322" name="Meets_EachOperator(3.0d,Greater,3.0d,False)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(3.0d,Greater,3.0d,False)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1988088533" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000068" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1323" name="Meets_EachOperator(3.1d,Greater,3.0d,True)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(3.1d,Greater,3.0d,True)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="735369386" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000049" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1324" name="Meets_EachOperator(1.0d,Equal,1.0d,True)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(1.0d,Equal,1.0d,True)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1363598951" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000032" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1325" name="Meets_EachOperator(0.0d,Equal,1.0d,False)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(0.0d,Equal,1.0d,False)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="2069226635" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000030" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1326" name="Meets_EachOperator(0.5d,Less,1.0d,True)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(0.5d,Less,1.0d,True)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1997473072" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000030" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1327" name="Meets_EachOperator(1.0d,Less,1.0d,False)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(1.0d,Less,1.0d,False)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1825772409" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000032" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1328" name="Meets_EachOperator(1.0d,LessOrEqual,1.0d,True)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(1.0d,LessOrEqual,1.0d,True)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1128942346" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000033" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1329" name="Meets_EachOperator(1.1d,LessOrEqual,1.0d,False)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(1.1d,LessOrEqual,1.0d,False)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1030393470" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000063" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1330" name="Meets_EachOperator(2.0d,NotEqual,1.0d,True)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(2.0d,NotEqual,1.0d,True)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="2028630260" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000041" asserts="0">
+                  <properties />
+                </test-case>
+                <test-case id="1331" name="Meets_EachOperator(1.0d,NotEqual,1.0d,False)" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EachOperator(1.0d,NotEqual,1.0d,False)" methodname="Meets_EachOperator" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="978602700" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000034" asserts="0">
+                  <properties />
+                </test-case>
+              </test-suite>
+              <test-case id="1318" name="Meets_EmptyConditions_True" fullname="Vibe.Core.Tests.WorldStateTests.Meets_EmptyConditions_True" methodname="Meets_EmptyConditions_True" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1359746230" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000051" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1333" name="Meets_MissingKey_TreatedAsZero" fullname="Vibe.Core.Tests.WorldStateTests.Meets_MissingKey_TreatedAsZero" methodname="Meets_MissingKey_TreatedAsZero" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="364711641" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000082" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1319" name="Meets_NullConditions_Throws" fullname="Vibe.Core.Tests.WorldStateTests.Meets_NullConditions_Throws" methodname="Meets_NullConditions_Throws" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="2035462615" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000139" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1315" name="Set_NewKey_Creates_ExistingKey_Overwrites" fullname="Vibe.Core.Tests.WorldStateTests.Set_NewKey_Creates_ExistingKey_Overwrites" methodname="Set_NewKey_Creates_ExistingKey_Overwrites" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="116667616" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000069" asserts="0">
+                <properties />
+              </test-case>
+              <test-case id="1314" name="TryGet_MissingKey_ReturnsFalseAndZero" fullname="Vibe.Core.Tests.WorldStateTests.TryGet_MissingKey_ReturnsFalseAndZero" methodname="TryGet_MissingKey_ReturnsFalseAndZero" classname="Vibe.Core.Tests.WorldStateTests" runstate="Runnable" seed="1017669522" result="Passed" start-time="2026-10-04 01:10:33Z" end-time="2026-10-04 01:10:33Z" duration="0.000051" asserts="0">
+                <properties />
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

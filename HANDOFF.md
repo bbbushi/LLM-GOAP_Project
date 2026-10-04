@@ -4,11 +4,11 @@
 
 ## 当前状态
 
-**M1（GOAP 内核）达成，M2（多 NPC 生存闭环）已开工——卡①事件总线完成**。M1 验收（1 NPC、3 Action、2 Goal 自主生存 24 游戏小时）以精确行为计数通过；M2 卡①：结构化事件契约 v1（`Contracts/SimEvent.cs`，五类事件 + append-only 演进）落地——`Simulation.Events` 全量留存为留痕事实源、`Emitted` 同步推送、`Log` 降为人类可读子集投影（同源生成防分叉），危机检测（M2 卡②）与 M3 LLM 触发将消费事件流。已冻结契约：核心接口、World State v1、Action/Goal 配置 v1、Simulation 配置 v1、事件契约 v1（登记见 `Docs/DESIGN.md` §4.4，v0.9）。内核构成：`Assets/script/Core/` 下 Contracts（六接口 + IRuleSet + SimEvent）、WorldState、Config（MiniJson + ContentLoader 四种加载器）、Planner（GoapPlanner + internal BinaryHeap）、Sim（Simulation tick 引擎 + NpcAgent，键投影与三类倍率结算通道、事件发射）。M1 场景内容：`Docs/schemas/examples/m1-scenario/` 四件套。单测共 158 项全绿（WorldState 32 + MiniJson 22 + Action/Goal 加载 22 + Simulation 配置加载 20 + Planner 33 + Simulation 29（含事件总线 8 项）；headless mono 反射跑器验证，编辑器 Test Runner 正式留档仍待做，见进行中）。`Assets/script/Test.cs` 仍为模板占位。协作基础设施：README、`Docs/AGENT_COMMON.md`、/checkpoint、/supervise 监管小组（首次审查已关闭，报告 `Docs/reviews/2026-09-10-design-handoff.md`）、每日 devlog（`Scripts/devlog/`；09-18 起因外置卷挂载名变化断更 17 天，10-04 修复）、MCP 纳管开关（`Scripts/mcp/`）、共享远程（提交后即 push）。
+**M1（GOAP 内核）达成，M2（多 NPC 生存闭环）已开工——卡①事件总线完成**。M1 验收（1 NPC、3 Action、2 Goal 自主生存 24 游戏小时）以精确行为计数通过；M2 卡①：结构化事件契约 v1（`Contracts/SimEvent.cs`，五类事件 + append-only 演进）落地——`Simulation.Events` 全量留存为留痕事实源、`Emitted` 同步推送、`Log` 降为人类可读子集投影（同源生成防分叉），危机检测（M2 卡②）与 M3 LLM 触发将消费事件流。已冻结契约：核心接口、World State v1、Action/Goal 配置 v1、Simulation 配置 v1、事件契约 v1（登记见 `Docs/DESIGN.md` §4.4，v0.9）。内核构成：`Assets/script/Core/` 下 Contracts（六接口 + IRuleSet + SimEvent）、WorldState、Config（MiniJson + ContentLoader 四种加载器）、Planner（GoapPlanner + internal BinaryHeap）、Sim（Simulation tick 引擎 + NpcAgent，键投影与三类倍率结算通道、事件发射）。M1 场景内容：`Docs/schemas/examples/m1-scenario/` 四件套。单测共 158 项全绿（WorldState 32 + MiniJson 22 + Action/Goal 加载 22 + Simulation 配置加载 20 + Planner 33 + Simulation 29（含事件总线 8 项）），双通道验证一致：headless mono 反射跑器 + Unity Test Runner（EditMode，正式留档 `Docs/test-reports/2026-10-04-editmode.xml`；跑法见 `Docs/AGENT_COMMON.md` §7）。`Assets/script/Test.cs` 仍为模板占位。协作基础设施：README、`Docs/AGENT_COMMON.md`、/checkpoint、/supervise 监管小组（首次审查已关闭，报告 `Docs/reviews/2026-09-10-design-handoff.md`）、每日 devlog（`Scripts/devlog/`；09-18 起因外置卷挂载名变化断更 17 天，10-04 修复）、MCP 纳管开关（`Scripts/mcp/`）、共享远程（提交后即 push）。
 
 ## 进行中
 
-- （可选留档，非阻塞）在 Unity Test Runner（EditMode）跑一遍 Vibe.Core.Tests——headless mono 反射跑器已验证 150/150 全绿（本机 mcs `-langversion:latest` 编译 + 项目 PackageCache 的 nunit.framework.dll，dll 需复制到测试 dll 同目录供 mono 解析；反射跑器须同时匹配 [Test] 与 [TestCase]——WorldStateTests 有 12 个参数化用例），此步仅为正式化记录。
+（无）——可选留档项已了结：Unity Test Runner（EditMode）158/158 与 headless mono 反射跑器一致，正式留档 `Docs/test-reports/2026-10-04-editmode.xml`。
 
 注意：每日日志的定时任务装在本机 `~/Library/LaunchAgents/`（不入库）；新机器协作需按 `Scripts/devlog/README.md` 安装。
 

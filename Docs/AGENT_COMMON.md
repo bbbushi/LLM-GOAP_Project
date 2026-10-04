@@ -71,13 +71,15 @@
 
 ## 7. 常用命令
 
-- **Unity 版本**：2022.3.15f1c1（用 Unity Hub 打开，版本需一致）。
+- **Unity 版本**：2022.3.15f1c1（用 Unity Hub 打开，版本需一致）。编辑器安装路径**每机不同**（本机：`/Volumes/Tool/Unity/2022.3.15f1c1/Unity.app`），下述 CLI 路径按本机实际调整；批处理跑测试前确认项目未被其他 Unity 实例打开（陈旧 `Temp/UnityLockfile` 也会报"另一实例"，无编辑器进程时可删）。
 - **编译**：无独立构建脚本；Unity 编辑器打开工程即编译（Assembly-CSharp）。
 - **测试**：已安装 Unity Test Framework（`com.unity.test-framework`）。通过编辑器 Window → General → Test Runner 运行 EditMode/PlayMode 测试；CLI 形式供参考：
   ```
-  /Applications/Unity/Hub/Editor/2022.3.15f1c1/Unity.app/Contents/MacOS/Unity \
-    -projectPath "<项目路径>" -runTests -testPlatform EditMode -testResults results.xml -batchmode
+  <Unity安装路径>/Contents/MacOS/Unity \
+    -projectPath "<项目路径>" -runTests -testPlatform EditMode -nographics -batchmode \
+    -testResults results.xml -logFile unity-test.log
   ```
+  另有 **headless mono 直跑通道**（不开编辑器，内核回归每卡常用）：`mcs -langversion:latest` 分别编译 `Assets/script/Core`（库）与 `Assets/script/Tests/Editor`（测试库），均引用 PackageCache 的 `com.unity.ext.nunit@1.0.6/net35/unity-custom/nunit.framework.dll`（**dll 须复制到测试 dll 同目录**供 mono 解析）；反射跑器须同时匹配 `[Test]` 与 `[TestCase]`（WorldStateTests 有 12 个参数化用例）；**须在工程根运行**——两个盘上示例文件用例依赖 cwd。正式留档放 `Docs/test-reports/YYYY-MM-DD-<platform>.xml`。
 - 无 lint/CI。本地 git 仓库已初始化（`.gitignore`/`.gitattributes` 为 Unity 标准模板，YAML 资产走 UnityYAMLMerge）。
 - **共享远程**：`origin` = `github.com/bbbushi/LLM-GOAP_Project`（私有）。约定：产生新提交后即 push；push 失败不阻塞本地工作。
 - **工具脚本**：`Scripts/devlog/`——每日开发日志自动化（开关、安装、约束见其 README）。`Scripts/mcp/`——MCP 纳管开关（规则见 §4，用法见其 README）。新增运维类脚本放 `Scripts/<名称>/`，并在此处登记一行。
