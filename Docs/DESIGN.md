@@ -121,7 +121,7 @@
 - **规则验证层**（最大风险点的对策）：LLM 输出必须经 `JSON Schema 校验 → 沙盒模拟 N tick 验证可达性 → 通过才应用，失败回退默认规则集`。该层同时是研究点①的实验对象。
 - **可复现性**：固定随机种子；记录并缓存全部 LLM 请求/响应（同一输入重放而非重调）。无此则对照实验无法控制变量。
 - **NPC 记忆**：LLM 生成初始人格后，记忆 = 游戏内真实事件的结构化时间流；定期（低频）由 LLM 摘要压缩（摘要产物为结构化 JSON 记忆条目，不以自由文本回流，符合铁律 1），保证长期连贯性。
-- **每日世界脚本（Day Script）**：LLM 每游戏日输出一份结构化日脚本（当前仅天气：类型 + 效果参数）。天气只通过**预定义效果通道**生效（生产倍率、消耗倍率、行动成本权重），不直接改状态，同样经规则验证层裁决；API 失败回退内置随机天气表。可一次生成多天、用完再续以降低调用频次。
+- **每日世界脚本（Day Script）**：LLM 每游戏日输出一份结构化日脚本（当前仅天气：类型 + 效果参数）。天气只通过**预定义效果通道**生效（生产倍率、消耗倍率、行动成本权重），不直接改状态，同样经规则验证层裁决；API 失败回退内置随机天气表。可一次生成多天、用完再续以降低调用频次。引擎挂载点为 `IDayScheduler` 日界回调（M2 收尾落地）：引擎在日界且仅日界时调用，脚本内容经上述通道生效，当日首个 tick 即受新规则约束。
 - **成本控制**：NPC 批量生成（一次生成一批）；响应缓存；仅低频调用。
 - **UI 选型：UI Toolkit 而非 UGUI**（2026-09-09）：本项目 UI 全部是可观测性面板（行为日志、资源曲线、决策依据、指令输入），UI Toolkit（保留模式、ListView 虚拟化、无 Canvas Rebuild）正是该场景的设计目标；UXML/USS 为纯文本资产，可 diff/review、可由 AI agent 可靠生成，契合接力协作（UGUI prefab 对编辑器外修改与 AI 生成不可靠）。**UGUI 仅在 Toolkit 无法覆盖处（如世界空间 UI）局部引入，两者可共存。** 已知代价：资源曲线需自制（`MeshGenerationContext` 画折线，约几十行）；NPC 头顶标签用 `WorldToScreenPoint` 投影到 overlay 实现。
 
@@ -142,7 +142,7 @@
 | 契约 | 版本 | 冻结日期 | 事实源 | 要点 |
 |---|---|---|---|---|
 | World State | v1 | 2026-09-09 | `Docs/schemas/world-state.schema.json` | 纯数值平面键值对；缺失键视为 0；NPC 键 `npc.<id>.<key>`；天气不入世界状态；条件六算子（≥ 基线）、效果 Set/Add/MultiplyBy（+= 基线） |
-| 核心接口 | v1 | 2026-09-09 | `Assets/script/Core/Contracts/` | `IAction / IGoal / IWorldState / IPlanner / IRuleProvider / ILLMProvider` + 伴生 `IRuleSet`（三类倍率通道）；内核 `noEngineReferences` |
+| 核心接口 | v1 | 2026-09-09 | `Assets/script/Core/Contracts/` | `IAction / IGoal / IWorldState / IPlanner / IRuleProvider / ILLMProvider` + 伴生 `IRuleSet`（三类倍率通道）+ `IDayScheduler`（2026-10-04 M2 收尾增补：日界挂载点——引擎在日界且仅日界时调用，铁律 3「LLM 只在日界/事件触发时被调」的结构承载，M3 每日世界脚本的正式入口；日界内容经 IRuleProvider 通道同 tick 生效）；内核 `noEngineReferences` |
 | Action/Goal 配置 | v1 | 2026-09-13 | `Docs/schemas/action.schema.json`、`goal.schema.json` + 加载器 `Assets/script/Core/Config/` | 文件级集合格式 `{version, actions/goals:[…]}`；算子字符串与 `ConditionOp`/`EffectOp` 枚举名逐一对应，op 缺省取 ≥/+= 基线；id 库内唯一；加载器逐条镜像 Schema 约束（未知字段/算子显式报错，绝不静默忽略） |
 | Simulation 配置 | v1 | 2026-09-20 | `Docs/schemas/simulation.schema.json` + 加载器 `Assets/script/Core/Config/`（含 world-state 加载） | `{ticksPerGameHour, passiveEffects, agents[{id, localKeys, goalIds}]}`；被动效果每 tick 直接落盘（生存压力内容化，不经倍率通道）；localKeys 驱动键投影（规划视图 npc.\<id\>.\<key\>→裸键，效果写回落回个体命名空间——action.schema 所述投影职责的落地）；goalIds 跨文件引用由内核组合时校验；M1 场景示例 `Docs/schemas/examples/m1-scenario/`。**2026-10-04（M2 卡②）向后兼容增补可选 `crises[{id, conditions}]`**（危机定义，条件形状与行动/目标条件一致、读完整键空间；tick 末求值、边沿触发），仍为 v1；场景示例：M1 单 NPC `examples/m1-scenario/`、M2 多 NPC 分工+危机 `examples/m2-scenario/` |
 | 事件契约 | v1 | 2026-10-04 | `Assets/script/Core/Contracts/SimEvent.cs` | 七类事件：DayBegin / PlansInvalidated / AgentReplanned / AgentExecuted / AgentIdle / CrisisTriggered / CrisisResolved（危机两类的 CrisisId 字段为 M2 卡②增补）；扁平只读结构（tick/day/type + 按类型适用的可选字段，同 WorldCondition/WorldEffect 家族风格）；Simulation.Events 全量留存（留痕事实源）+ Emitted 同步推送（观察者只读）；行为日志 Log 是事件流的人类可读子集投影、同源生成防分叉；append-only 演进——新增事件类型/字段属兼容扩展（LLM 调用事件 M3 在此扩），已冻结字段的语义变更须升版本 |

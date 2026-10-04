@@ -7,7 +7,8 @@ namespace Vibe.Core
 {
     /// <summary>
     /// headless 模拟内核（DESIGN.md §4.2「模拟内核」）：tick 循环 + 资源结算 + NPC 调度。
-    /// 每 tick 的固定次序：推进时间戳 → 被动结算（饥饿上升等，配置于 simulation.schema.json v1，
+    /// 每 tick 的固定次序：推进时间戳（日界时发射 DayBegin 事件，随后调用日界挂载点
+    /// <see cref="DayScheduler"/>）→ 被动结算（饥饿上升等，配置于 simulation.schema.json v1，
     /// 直接落盘不经倍率通道）→ 规则变更失效检查 → 各 NPC 依次执行 GOAP 循环（<see cref="NpcAgent"/>）
     /// → 危机检测（<see cref="SimulationConfig.Crises"/>：对行动后的完整世界状态求值，边沿触发）。
     ///
@@ -68,6 +69,13 @@ namespace Vibe.Core
         /// 单线程语义（tick 循环内），观察者只读；异常会中断模拟（fail-fast，与内核整体姿态一致）。
         /// </summary>
         public event Action<SimEvent> Emitted;
+
+        /// <summary>
+        /// 游戏日调度挂载点（M2 收尾，<see cref="Contracts.IDayScheduler"/>）：日界且仅日界时
+        /// 被引擎调用——紧随 DayBegin 事件、先于被动结算与规则失效检查（实现约定见接口注释）。
+        /// 可空（无日界级工作）、可随时替换；只由引擎调用，外部不得直接调用实现或在回调中推进模拟。
+        /// </summary>
+        public IDayScheduler DayScheduler { get; set; }
 
         /// <summary>参与模拟的 NPC（按配置顺序）。</summary>
         public IReadOnlyList<NpcAgent> Agents => _agents;
@@ -143,13 +151,20 @@ namespace Vibe.Core
             // 1. 推进时间戳：以当前值重建带新 (tick, day) 的状态；日界对齐绝对 tick
             int nextTick = _world.Tick + 1;
             int nextDay = _world.Day;
-            if (nextTick % TicksPerDay == 0)
+            bool dayBegins = nextTick % TicksPerDay == 0;
+            if (dayBegins)
             {
                 nextDay++;
                 _log.Add($"[t={nextTick}] day {nextDay} begins");
                 Emit(SimEvent.DayBegan(nextTick, nextDay));
             }
             _world = new WorldState(nextTick, nextDay, SnapshotValues(_world));
+
+            // 1b. 日界挂载点（铁律 3 的结构承载，DESIGN.md §3.2）：引擎唯一的日界级外部调用，
+            //     紧随 DayBegin 事件、先于被动结算——回调所见 Current 即新日 0 时、昨日收盘值；
+            //     回调内替换规则并触发 RulesChanged 时由本 tick 第 3 步捕获，NPC 当日首个
+            //     tick 即按新规则重规划（M3 每日世界脚本由此生效）
+            if (dayBegins) DayScheduler?.OnDayBegin(nextDay);
 
             // 2. 被动结算：直接落盘（完整键名，不经倍率通道——通道只作用于行动效果）
             if (Config.PassiveEffects.Count > 0)

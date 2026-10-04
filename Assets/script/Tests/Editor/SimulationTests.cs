@@ -12,8 +12,10 @@ namespace Vibe.Core.Tests
     /// 模拟内核契约测试：tick 推进与日界换算、被动结算、键投影与效果写回、
     /// 结算倍率通道（DESIGN.md §4.3）、重规划触发（计划耗尽 / 前提失效 / 规则变更）、
     /// 事件总线（事件契约 v1：字段与次序、推送与退订、事件流确定性、与行为日志同源）、
-    /// 多 agent 顺序可见性、确定性（可复现），以及 M1 验收——内联镜像的 m1-scenario
-    /// 配置跑满 24 游戏小时自主生存（盘上文件的等价性由 SimulationConfigTests 保障）。
+    /// 多 agent 顺序可见性、危机检测（tick 末求值、边沿触发、同 tick 恢复不误报）、
+    /// 游戏日调度挂载点（IDayScheduler：日界时序、日脚本经规则通道同 tick 生效）、
+    /// 确定性（可复现），以及 M1/M2 验收——内联镜像的 m1/m2-scenario 配置自主生存
+    /// （盘上文件的等价性由 SimulationConfigTests 保障）。
     /// </summary>
     public class SimulationTests
     {
@@ -75,6 +77,41 @@ namespace Vibe.Core.Tests
                     ConsumptionMultipliers = consumption ?? new Dictionary<string, float>();
                 }
             }
+        }
+
+        /// <summary>记录型日界调度桩：记录调用时的 day/tick/观察值，可与 Emitted 观察者
+        /// 共用一条 trace 证明相对次序，并可注入额外行为。</summary>
+        private sealed class RecordingScheduler : IDayScheduler
+        {
+            private readonly Simulation _sim;
+            private readonly List<string> _trace;
+            public readonly List<int> Days = new List<int>();
+            public readonly List<int> TicksAtCall = new List<int>();
+            public readonly List<double> HungerAtCall = new List<double>();
+            public Action<int> Body;
+
+            public RecordingScheduler(Simulation sim, List<string> trace)
+            {
+                _sim = sim;
+                _trace = trace;
+            }
+
+            public void OnDayBegin(int day)
+            {
+                Days.Add(day);
+                TicksAtCall.Add(_sim.Tick);
+                HungerAtCall.Add(_sim.Current.Get("npc.n1.hunger"));
+                _trace.Add("sched:" + day);
+                Body?.Invoke(day);
+            }
+        }
+
+        /// <summary>回调型日界调度桩：把调用转发给任意委托。</summary>
+        private sealed class CallbackScheduler : IDayScheduler
+        {
+            private readonly Action<int> _body;
+            public CallbackScheduler(Action<int> body) => _body = body;
+            public void OnDayBegin(int day) => _body(day);
         }
 
         // ── 构造帮助 ─────────────────────────────────────────────
@@ -819,6 +856,81 @@ namespace Vibe.Core.Tests
             b.Run(720);
 
             Assert.IsTrue(a.Events.SequenceEqual(b.Events), "多 NPC 同输入同事件流（可复现）");
+        }
+
+        // ── 游戏日推进调度（M2 收尾）：日界挂载点 IDayScheduler ──
+
+        [Test]
+        public void DayScheduler_FiresOncePerBoundary_AfterDayBeginEvent_BeforeSettlement()
+        {
+            // tph=2 → 48 tick/日；Run(120) 恰跨两个日界（t=48→day2、t=96→day3），初始日不调用
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("food", 99) }) };
+            var sim = new Simulation(World(new Dictionary<string, double> { ["npc.n1.hunger"] = 0 }),
+                new List<IAction>(), goals,
+                MakeConfig("[{\"key\":\"npc.n1.hunger\",\"amount\":1}]", AgentN1, tph: 2));
+
+            var trace = new List<string>();
+            sim.Emitted += e => trace.Add("evt:" + e.Type);
+            var sched = new RecordingScheduler(sim, trace);
+            sim.DayScheduler = sched;
+
+            sim.Run(120);
+
+            CollectionAssert.AreEqual(new[] { 2, 3 }, sched.Days,
+                "每个日界恰一次；初始日不调用（与 DayBegin 事件语义一致）");
+            Assert.AreEqual(48, sched.TicksAtCall[0], "回调时时间戳已推进到新日首个 tick");
+            Assert.AreEqual(47d, sched.HungerAtCall[0],
+                "回调先于被动结算：所见是昨日收盘值（此前 47 tick 各 +1）");
+            int i = trace.IndexOf("evt:DayBegin");
+            Assert.GreaterOrEqual(i, 0);
+            Assert.AreEqual("sched:2", trace[i + 1], "挂载点紧随 DayBegin 事件，两者之间无任何事件");
+        }
+
+        [Test]
+        public void DayScheduler_DayScriptViaRulesChannel_AppliesFromFirstTickOfNewDay()
+        {
+            // 日界回调内替换规则（M3 每日世界脚本的生效通道）：同 tick 失效全部计划 → NPC 立即
+            // 按新规则重规划——新日从第一个 tick 就受新规则约束（次序由 Step 固定次序保证）
+            var actions = new List<IAction> { new StubAction("add", 1f, null, new[] { WorldEffect.Gain("flag", 1) }) };
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("flag", 2) }) };
+            var rules = new MutableRules();
+            var sim = new Simulation(World(null), actions, goals,
+                MakeConfig("[{\"key\":\"flag\",\"amount\":-1}]", AgentN1, tph: 2), rules: rules);
+            sim.DayScheduler = new CallbackScheduler(d => rules.Raise());
+
+            sim.Run(48); // t=48：day 2 首个 tick
+
+            var t48 = sim.Events.Where(e => e.Tick == 48).ToList();
+            CollectionAssert.AreEqual(
+                new[] { SimEventType.DayBegin, SimEventType.PlansInvalidated,
+                    SimEventType.AgentReplanned, SimEventType.AgentExecuted },
+                t48.Select(e => e.Type).ToList(),
+                "日界 → 规则生效作废 → 重规划 → 执行：全部落在当日首个 tick");
+        }
+
+        [Test]
+        public void DayScheduler_NoOp_LeavesEventStreamUnchanged()
+        {
+            var a = NewM1Simulation();
+            var b = NewM1Simulation();
+            b.DayScheduler = new CallbackScheduler(_ => { });
+
+            a.Run(240);
+            b.Run(240);
+
+            Assert.IsTrue(a.Events.SequenceEqual(b.Events), "空挂载点不改变模拟（纯可选扩展）");
+        }
+
+        [Test]
+        public void DayScheduler_Throws_PropagatesFailFast()
+        {
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("food", 99) }) };
+            var sim = new Simulation(World(null), new List<IAction>(), goals, MakeConfig("[]", AgentN1, tph: 1));
+            sim.DayScheduler = new CallbackScheduler(_ => throw new InvalidOperationException("day script missing"));
+
+            sim.Run(23); // 初始日内正常
+            Assert.Throws<InvalidOperationException>(() => sim.Run(2),
+                "t=24 日界：回调异常不被吞（fail-fast，与 Emitted 观察者一致）");
         }
     }
 }
