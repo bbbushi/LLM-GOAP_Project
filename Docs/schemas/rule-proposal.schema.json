@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bbbushi/LLM-GOAP_Project/Docs/schemas/rule-proposal.schema.json",
+  "title": "RuleProposal",
+  "description": "规则提案（权威契约 v1，冻结于 2026-10-04，M3 卡①）。LLM 输出的规则调整以「提案」形态进入规则验证层（Schema 校验 → 沙盒模拟 → 应用或回退，DESIGN.md §4.3），通过之前只是提案、不是规则——GOAP 引擎是唯一的状态修改者（铁律 2）。三类倍率通道是 LLM 对 GOAP 层影响的全部收敛点（IRuleSet 契约）：行动成本乘数改变规划取舍（变贵的行动被绕开），生产/消耗倍率改变行动效果结算幅度，均不直接修改状态。通道对象缺省 = 空 = 无修正（全 1）。乘数必须 ≥ 0：0 是合法杠杆（事实上禁用行动 / 归零产出），负值无语义（结算侧本就截断为 0），提案层直接拒绝以防 LLM 输出被静默变形。键的存在性由验证层在组合时校验：actionCostMultipliers 的键须存在于行动库 id，production/consumptionMultipliers 的键须存在于种子世界状态键空间——引用不存在的键（幻觉键）整体拒绝，绝不静默无操作。修改本契约须升 version 并同步 Docs/DESIGN.md §4.4。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "const": 1,
+      "description": "契约版本号；与本 Schema 的冻结版本绑定。"
+    },
+    "actionCostMultipliers": {
+      "type": "object",
+      "propertyNames": { "minLength": 1 },
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      },
+      "description": "行动成本乘数：行动 id → 乘数（缺省 1）。>1 使行动变贵（规划自动绕开），<1 变便宜，0 = 事实上禁用。例：暴雨日「收集浆果」×2 → NPC 计划翻转为替代行动。"
+    },
+    "productionMultipliers": {
+      "type": "object",
+      "propertyNames": { "minLength": 1 },
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      },
+      "description": "资源生产倍率：世界状态键 → 乘率（缺省 1），结算时作用于产出类行动效果（正增量）。例：干旱日 food ×0.5。"
+    },
+    "consumptionMultipliers": {
+      "type": "object",
+      "propertyNames": { "minLength": 1 },
+      "additionalProperties": {
+        "type": "number",
+        "minimum": 0
+      },
+      "description": "资源消耗倍率：世界状态键 → 乘率（缺省 1），结算时作用于消耗（负增量）。例：寒冬日 food ×2（吃饭消耗翻倍）。"
+    }
+  }
+}

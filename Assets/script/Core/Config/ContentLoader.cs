@@ -68,6 +68,9 @@ namespace Vibe.Core.Config
         private static readonly HashSet<string> CrisisFields =
             new HashSet<string> { "id", "conditions" };
 
+        private static readonly HashSet<string> RuleProposalFields =
+            new HashSet<string> { "version", "actionCostMultipliers", "productionMultipliers", "consumptionMultipliers" };
+
         /// <summary>解析一份行动库（{version, actions:[…]}）。返回顺序与配置一致。</summary>
         public static IReadOnlyList<IAction> LoadActions(string json)
         {
@@ -240,6 +243,51 @@ namespace Vibe.Core.Config
                 }
             }
             return new SimulationConfig(ticksPerGameHour, passiveEffects, agents, crises);
+        }
+
+        /// <summary>
+        /// 解析一份规则提案（{version, actionCostMultipliers?, productionMultipliers?, consumptionMultipliers?}）。
+        /// 格式由 Docs/schemas/rule-proposal.schema.json（v1，冻结契约）定义；三类通道即 IRuleSet 的
+        /// 三个通道，全部可选（缺省 = 空 = 无修正）。乘数 ≥ 0（0 合法，负值拒绝——结算侧虽截断 0，
+        /// 提案层显式报错防 LLM 输出被静默变形）；键的存在性由规则验证层在组合时校验（本加载器只见单文件）。
+        /// </summary>
+        public static RuleProposalSpec LoadRuleProposal(string json)
+        {
+            if (json == null) throw new ArgumentNullException(nameof(json));
+            var root = JsonValue.Parse(json);
+            if (root.Type != JsonType.Object)
+                throw Fail($"顶层必须是对象（实际 {TypeName(root)}）");
+
+            CheckKnownFields(root, RuleProposalFields, "顶层");
+            RequireVersion(root);
+
+            var actionCost = ParseMultiplierChannel(root, "actionCostMultipliers");
+            var production = ParseMultiplierChannel(root, "productionMultipliers");
+            var consumption = ParseMultiplierChannel(root, "consumptionMultipliers");
+            return new RuleProposalSpec(actionCost, production, consumption);
+        }
+
+        /// <summary>解析一个倍率通道对象（键 → 非负数值）；字段可缺省（= 空通道）。</summary>
+        private static IReadOnlyDictionary<string, float> ParseMultiplierChannel(JsonValue root, string field)
+        {
+            if (!root.TryGetMember(field, out var channel))
+                return new Dictionary<string, float>();
+            if (channel.Type != JsonType.Object)
+                throw Fail($"顶层 {field} 必须是对象（实际 {TypeName(channel)}）");
+
+            var result = new Dictionary<string, float>(channel.Members.Count);
+            foreach (var kv in channel.Members)
+            {
+                if (kv.Key.Length == 0)
+                    throw Fail($"顶层 {field} 的键不能为空字符串");
+                if (kv.Value.Type != JsonType.Number)
+                    throw Fail($"{field}.{kv.Key} 必须是数值（实际 {TypeName(kv.Value)}）");
+                double multiplier = kv.Value.AsNumber;
+                if (multiplier < 0d)
+                    throw Fail($"{field}.{kv.Key} 不能为负（实际 {multiplier}；0 合法 = 禁用/归零，负值无语义）");
+                result[kv.Key] = (float)multiplier;
+            }
+            return result;
         }
 
         // —— 顶层结构 ——

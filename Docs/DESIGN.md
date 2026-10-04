@@ -118,7 +118,7 @@
 
 ### 4.3 关键设计决策
 
-- **规则验证层**（最大风险点的对策）：LLM 输出必须经 `JSON Schema 校验 → 沙盒模拟 N tick 验证可达性 → 通过才应用，失败回退默认规则集`。该层同时是研究点①的实验对象。
+- **规则验证层**（最大风险点的对策）：LLM 输出必须经 `JSON Schema 校验 → 沙盒模拟 N tick 验证可达性 → 通过才应用，失败回退默认规则集`。该层同时是研究点①的实验对象。内核已落地（M3 卡①，`Assets/script/Core/Rules/RuleValidator`）：三段管线 = 结构校验（加载器镜像 Schema）→ 幻觉键拒绝（通道键须存在于行动库 id / 种子世界键空间，防静默无操作）→ 沙盒 N tick 裁决（`SandboxOptions`：tick 数 + 逐 tick 末不变式 + 零不可规划；裁决 `RuleVerdict` 机器可读并携带沙盒留痕）。语义边界：规划用名义效果、对倍率盲——倍率提案不改变可达性，不可规划是种子场景属性（零不可规划守卫防退化场景上线提案），提案质量的主信号是不变式。
 - **可复现性**：固定随机种子；记录并缓存全部 LLM 请求/响应（同一输入重放而非重调）。无此则对照实验无法控制变量。
 - **NPC 记忆**：LLM 生成初始人格后，记忆 = 游戏内真实事件的结构化时间流；定期（低频）由 LLM 摘要压缩（摘要产物为结构化 JSON 记忆条目，不以自由文本回流，符合铁律 1），保证长期连贯性。
 - **每日世界脚本（Day Script）**：LLM 每游戏日输出一份结构化日脚本（当前仅天气：类型 + 效果参数）。天气只通过**预定义效果通道**生效（生产倍率、消耗倍率、行动成本权重），不直接改状态，同样经规则验证层裁决；API 失败回退内置随机天气表。可一次生成多天、用完再续以降低调用频次。引擎挂载点为 `IDayScheduler` 日界回调（M2 收尾落地）：引擎在日界且仅日界时调用，脚本内容经上述通道生效，当日首个 tick 即受新规则约束。
@@ -146,6 +146,7 @@
 | Action/Goal 配置 | v1 | 2026-09-13 | `Docs/schemas/action.schema.json`、`goal.schema.json` + 加载器 `Assets/script/Core/Config/` | 文件级集合格式 `{version, actions/goals:[…]}`；算子字符串与 `ConditionOp`/`EffectOp` 枚举名逐一对应，op 缺省取 ≥/+= 基线；id 库内唯一；加载器逐条镜像 Schema 约束（未知字段/算子显式报错，绝不静默忽略） |
 | Simulation 配置 | v1 | 2026-09-20 | `Docs/schemas/simulation.schema.json` + 加载器 `Assets/script/Core/Config/`（含 world-state 加载） | `{ticksPerGameHour, passiveEffects, agents[{id, localKeys, goalIds}]}`；被动效果每 tick 直接落盘（生存压力内容化，不经倍率通道）；localKeys 驱动键投影（规划视图 npc.\<id\>.\<key\>→裸键，效果写回落回个体命名空间——action.schema 所述投影职责的落地）；goalIds 跨文件引用由内核组合时校验；M1 场景示例 `Docs/schemas/examples/m1-scenario/`。**2026-10-04（M2 卡②）向后兼容增补可选 `crises[{id, conditions}]`**（危机定义，条件形状与行动/目标条件一致、读完整键空间；tick 末求值、边沿触发），仍为 v1；场景示例：M1 单 NPC `examples/m1-scenario/`、M2 多 NPC 分工+危机 `examples/m2-scenario/` |
 | 事件契约 | v1 | 2026-10-04 | `Assets/script/Core/Contracts/SimEvent.cs` | 七类事件：DayBegin / PlansInvalidated / AgentReplanned / AgentExecuted / AgentIdle / CrisisTriggered / CrisisResolved（危机两类的 CrisisId 字段为 M2 卡②增补）；扁平只读结构（tick/day/type + 按类型适用的可选字段，同 WorldCondition/WorldEffect 家族风格）；Simulation.Events 全量留存（留痕事实源）+ Emitted 同步推送（观察者只读）；行为日志 Log 是事件流的人类可读子集投影、同源生成防分叉；append-only 演进——新增事件类型/字段属兼容扩展（LLM 调用事件 M3 在此扩），已冻结字段的语义变更须升版本 |
+| 规则提案 | v1 | 2026-10-04 | `Docs/schemas/rule-proposal.schema.json` + 加载器 `Assets/script/Core/Config/`（LoadRuleProposal） | LLM 规则调整的输出契约（M3 卡①冻结）：三类倍率通道 actionCostMultipliers / productionMultipliers / consumptionMultipliers——即 IRuleSet 三通道，LLM 对 GOAP 层影响的全部收敛点；通道全部可选（缺省 = 空 = 无修正），乘数 ≥ 0（0 合法 = 禁用/归零，负值拒绝——防 LLM 输出被静默变形）；键存在性由规则验证层在组合时校验（加载器只见单文件）。验证层 `Assets/script/Core/Rules/`：RuleValidator 三段管线（结构校验 → 幻觉键拒绝 → 沙盒 N tick 裁决 RuleVerdict）；RuleSet.Default = 回退内置默认（全空通道），MutableRuleProvider.Swap = 应用通道 |
 
 ### 4.5 可扩展性设计（一等要求）
 
