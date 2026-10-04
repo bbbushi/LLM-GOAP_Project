@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-**M1（GOAP 内核）里程碑达成**：任务卡 ①–⑤ 全部完成，验收内容（headless：1 NPC、3 Action、2 Goal 自主生存 24 游戏小时 + 单测）已落地——`SimulationTests.M1Scenario_Survives24GameHours` 以精确行为计数通过（240 tick：3 次进餐 / 4 次采集 / 3 次伐木，饥饿峰值 61 从不失控，末期 food 3 / wood 3 / hunger 57）。已冻结契约：核心接口、World State v1、Action/Goal 配置 v1、Simulation 配置 v1（登记见 `Docs/DESIGN.md` §4.4，v0.8）。内核构成：`Assets/script/Core/` 下 Contracts（六接口 + IRuleSet）、WorldState、Config（MiniJson + ContentLoader 四种加载器）、Planner（GoapPlanner + internal BinaryHeap）、Sim（Simulation tick 引擎 + NpcAgent，键投影与三类倍率结算通道）。M1 场景内容：`Docs/schemas/examples/m1-scenario/` 四件套。单测共 150 项全绿（WorldState 32 + MiniJson 22 + Action/Goal 加载 22 + Simulation 配置加载 20 + Planner 33 + Simulation 21；headless mono 反射跑器验证，编辑器 Test Runner 正式留档仍待做，见进行中）。`Assets/script/Test.cs` 仍为模板占位。协作基础设施：README、`Docs/AGENT_COMMON.md`、/checkpoint、/supervise 监管小组（首次审查已关闭，报告 `Docs/reviews/2026-09-10-design-handoff.md`）、每日 devlog（`Scripts/devlog/`；09-18 起因外置卷挂载名变化断更 17 天，10-04 修复——脚本改自定位项目根、plist 更新重载，并补发 10-04 日志）、MCP 纳管开关（`Scripts/mcp/`，10-04 落地）、共享远程（提交后即 push）。
+**M1（GOAP 内核）达成，M2（多 NPC 生存闭环）已开工——卡①事件总线完成**。M1 验收（1 NPC、3 Action、2 Goal 自主生存 24 游戏小时）以精确行为计数通过；M2 卡①：结构化事件契约 v1（`Contracts/SimEvent.cs`，五类事件 + append-only 演进）落地——`Simulation.Events` 全量留存为留痕事实源、`Emitted` 同步推送、`Log` 降为人类可读子集投影（同源生成防分叉），危机检测（M2 卡②）与 M3 LLM 触发将消费事件流。已冻结契约：核心接口、World State v1、Action/Goal 配置 v1、Simulation 配置 v1、事件契约 v1（登记见 `Docs/DESIGN.md` §4.4，v0.9）。内核构成：`Assets/script/Core/` 下 Contracts（六接口 + IRuleSet + SimEvent）、WorldState、Config（MiniJson + ContentLoader 四种加载器）、Planner（GoapPlanner + internal BinaryHeap）、Sim（Simulation tick 引擎 + NpcAgent，键投影与三类倍率结算通道、事件发射）。M1 场景内容：`Docs/schemas/examples/m1-scenario/` 四件套。单测共 158 项全绿（WorldState 32 + MiniJson 22 + Action/Goal 加载 22 + Simulation 配置加载 20 + Planner 33 + Simulation 29（含事件总线 8 项）；headless mono 反射跑器验证，编辑器 Test Runner 正式留档仍待做，见进行中）。`Assets/script/Test.cs` 仍为模板占位。协作基础设施：README、`Docs/AGENT_COMMON.md`、/checkpoint、/supervise 监管小组（首次审查已关闭，报告 `Docs/reviews/2026-09-10-design-handoff.md`）、每日 devlog（`Scripts/devlog/`；09-18 起因外置卷挂载名变化断更 17 天，10-04 修复）、MCP 纳管开关（`Scripts/mcp/`）、共享远程（提交后即 push）。
 
 ## 进行中
 
@@ -14,6 +14,7 @@
 
 ## 已决策
 
+- **事件契约 v1 冻结：结构化事件流取代字符串日志成为留痕事实源**（2026-10-04，M2 卡①）：① SimEvent 扁平只读结构（tick/day/type + 按类型适用的可选字段，同 WorldCondition/WorldEffect 家族风格——平铺可序列化、可等值比较，无继承体系）；五类事件 DayBegin / PlansInvalidated / AgentReplanned / AgentExecuted / AgentIdle。② 载体双通道：`Simulation.Events` 全量留存（不丢、可回放对照）+ `Emitted` 同步推送（观察者只读、单线程语义）；③ 行为日志 `Log` 降为事件流的人类可读子集投影，与事件在同一处代码同源生成防分叉（M1 的 150 项断言原样通过即格式兼容证明）；④ 演进 append-only：新增事件类型/字段属兼容扩展（危机事件 M2 卡②、LLM 调用事件 M3），已冻结字段语义变更须升版本。登记：DESIGN.md §4.4。
 - **MCP 纳管开关落地**（2026-10-04，关闭 09-08 TODO）：禁令落注册层——不注册服务器 = MCP 工具对所有走注册表的客户端（交互会话 / headless `claude -p`）天然不存在；devlog 自动化的 `--allowedTools` 白名单不含 mcp__ 工具，双保险。开关 `Scripts/mcp/mcp.sh on|off|status`：local scope 每机自管、`.mcp.json` 保持不存在（status 检查）；默认 stdio（`uvx mcp-for-unity`，与包内 ClaudeCodeConfigurator 生成命令一致），`on --http <url>` 可选（端口随占用漂移，勿写死）；off 按包内 Unregister 惯例清全部 scope 防残留。规则正文入 `AGENT_COMMON.md` §4，自述见 `Scripts/mcp/README.md`。现状：默认未注册；`on` 仅经用户确认后执行。
 - **每日日志脚本自定位项目根**（2026-10-04）：断更根因是外置卷挂载名变化（`/Volumes/workspace 1` → `/Volumes/workspace`）致 launchd 找不到程序——launchd 层失败在脚本侧**无任何日志痕迹**，`status` 的「上次运行」日期停滞即信号。devlog.sh 改为从脚本位置自定位项目根（卷名不再入代码），plist 程序路径仍需本机绝对路径（换机器/卷名变化时同步改并重载）。
 - **Simulation 配置 v1 冻结 + 运行时语义**（2026-09-20，M1 卡⑤）：① 生存压力（饥饿上升等）是内容不是代码——每 tick 被动结算效果进 `simulation.schema.json` 的 passiveEffects，直接落盘不经倍率通道（通道只作用于行动效果结算，语义归 IRuleSet）；② 键投影按 agents[].localKeys 声明执行：规划视图 npc.\<id\>.\<key\>→裸键、效果写回落回个体命名空间（action.schema.json 把投影职责指给规划侧，此为落地）；③ 每 tick 固定次序：推进时间戳→被动结算→规则变更失效→NPC 依次行动；④ M1 场景内容在 `Docs/schemas/examples/m1-scenario/`。登记：DESIGN.md §4.4。
@@ -34,4 +35,5 @@
 
 ## 下一步
 
-1. **M2（多 NPC 生存闭环）开工**（DESIGN.md §6.4）：多 NPC 资源竞争/协作、危机检测、游戏日推进调度、事件总线 + 全量日志。现成基础：Simulation 的 agents 列表与顺序结算已支持多 NPC（有测试）；日界已有（day begins 留痕）；日志先行、事件总线待结构化。建议首卡：事件总线（结构化 SimEvent 替代 string 日志，全量留痕不丢）或危机检测（资源阈值判定 → 事件）。注意：内核/设计级任务，模型路由要求 glm-5.3 档（AGENT_COMMON §6）。
+1. **M2 卡②：危机检测**（DESIGN.md §6.4 / §6.1 DoD-2 前置）：资源阈值判定 → 危机事件（ResourceCrisis，事件契约 append-only 扩展）。现成基础：事件流已结构化（危机检测的输入与输出都有了）；实现方向待定——阈值配置进 simulation.json（内容化，同 passiveEffects 先例）还是独立危机配置文件，动手前先定。注意：内核/设计级任务，模型路由要求 glm-5.3 档（AGENT_COMMON §6）。
+2. M2 其余任务卡（DESIGN.md §6.4）：多 NPC 资源竞争/协作（结构已就绪：agents 顺序结算有测试）、游戏日推进调度。

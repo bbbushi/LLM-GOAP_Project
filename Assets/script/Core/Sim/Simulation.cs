@@ -15,8 +15,12 @@ namespace Vibe.Core
     /// 由内容作者负责（M1 场景从 tick 0 起）。每个 tick 重建带新时间戳的世界状态（值拷贝），
     /// 效果不会改动时间戳（IWorldState 契约），重建即推进。
     ///
-    /// 可观测性：全量行为日志（<see cref="Log"/>，每 NPC 每 tick 一行，重规划/执行/闲置均留痕）；
-    /// 结构化事件总线是 M2 范围，M1 以日志先行。无随机源——同输入同轨迹（可复现，DESIGN.md §4.3）。
+    /// 可观测性（事件契约 v1，DESIGN.md §4.4）：结构化事件流 <see cref="Events"/> 是留痕事实源——
+    /// 每次重规划/执行/闲置、日界、计划作废均发事件、全量留存不丢（DESIGN.md §4.5）；
+    /// <see cref="Emitted"/> 同步推送观察者（单线程 tick 内调用，观察者只读、不得改状态，
+    /// 异常向上冒泡属 fail-fast）。<see cref="Log"/> 为人类可读的行为日志（M1 起的展示载体，
+    /// 内容是事件流的子集投影，两者由同一处代码同源生成）。
+    /// 无随机源——同输入同轨迹（可复现，DESIGN.md §4.3）。
     /// 非线程安全：模拟单线程推进。实现 <see cref="IDisposable"/> 以退订规则事件（测试中
     /// 同一 provider 会驱动多个 Simulation 实例，不退订会让旧实例驻留事件委托链）。
     /// </summary>
@@ -27,6 +31,7 @@ namespace Vibe.Core
         private readonly IRuleProvider _rules;
         private readonly List<NpcAgent> _agents;
         private readonly List<string> _log = new List<string>();
+        private readonly List<SimEvent> _events = new List<SimEvent>();
         private bool _subscribedRulesChanged;
 
         private IWorldState _world;
@@ -50,8 +55,17 @@ namespace Vibe.Core
         /// <summary>一个游戏日的 tick 数 = 24 × ticksPerGameHour。</summary>
         public int TicksPerDay => Config.TicksPerGameHour * 24;
 
-        /// <summary>全量行为日志（每 NPC 每 tick 一行；M1 的可观测性载体，事件总线属 M2）。</summary>
+        /// <summary>全量行为日志（每 NPC 每 tick 一行；人类可读展示，事实源是 <see cref="Events"/>）。</summary>
         public IReadOnlyList<string> Log => _log;
+
+        /// <summary>全量结构化事件流（事件契约 v1；按发生序留存，不丢、可回放对照）。</summary>
+        public IReadOnlyList<SimEvent> Events => _events;
+
+        /// <summary>
+        /// 事件推送：每条事件在发生处同步调用（先入 <see cref="Events"/> 再推送，观察者所见即全量序）。
+        /// 单线程语义（tick 循环内），观察者只读；异常会中断模拟（fail-fast，与内核整体姿态一致）。
+        /// </summary>
+        public event Action<SimEvent> Emitted;
 
         /// <summary>参与模拟的 NPC（按配置顺序）。</summary>
         public IReadOnlyList<NpcAgent> Agents => _agents;
@@ -131,6 +145,7 @@ namespace Vibe.Core
             {
                 nextDay++;
                 _log.Add($"[t={nextTick}] day {nextDay} begins");
+                Emit(SimEvent.DayBegan(nextTick, nextDay));
             }
             _world = new WorldState(nextTick, nextDay, SnapshotValues(_world));
 
@@ -144,6 +159,7 @@ namespace Vibe.Core
                 _rulesDirty = false;
                 foreach (var agent in _agents) agent.InvalidatePlan();
                 _log.Add($"[t={nextTick}] rules changed → all plans invalidated");
+                Emit(SimEvent.PlansInvalidated(nextTick, nextDay));
             }
 
             // 4. 各 NPC 依次行动（后行动者看到先行动者的效果，配置顺序即结算顺序）
@@ -151,7 +167,31 @@ namespace Vibe.Core
             {
                 var report = agent.Act(_world, _actions, _planner, _rules);
                 _log.Add(FormatLine(nextTick, nextDay, agent.Id, report));
+                EmitAgentEvents(nextTick, nextDay, agent.Id, report);
             }
+        }
+
+        /// <summary>单次事件落地：先入全量流，再推送观察者（推送所见即留存序）。</summary>
+        private void Emit(SimEvent e)
+        {
+            _events.Add(e);
+            Emitted?.Invoke(e);
+        }
+
+        /// <summary>行为汇报 → 事件（与 FormatLine 同源：同一 report 产出日志行与事件，防分叉）。</summary>
+        private void EmitAgentEvents(int tick, int day, string agentId, AgentTickReport r)
+        {
+            if (r.ExecutedActionId != null)
+            {
+                if (r.Replanned)
+                    Emit(SimEvent.Replanned(tick, day, agentId, r.ReplanGoalId, r.ReplanSteps, r.ReplanCost));
+                Emit(SimEvent.Executed(tick, day, agentId, r.ExecutedActionId));
+                return;
+            }
+            // 闲置：GoalMet 附已满足的目标 id；Unplannable 重规划失败，无目标可附
+            Emit(r.Idle == IdleReason.GoalMet
+                ? SimEvent.Idled(tick, day, agentId, IdleReason.GoalMet, r.ReplanGoalId)
+                : SimEvent.Idled(tick, day, agentId, IdleReason.Unplannable));
         }
 
         /// <summary>行为日志行：执行形如「[t=61 d=1 h=6] n1 replan(goal=stay_alive steps=1 cost=1) exec eat」；
@@ -171,7 +211,7 @@ namespace Vibe.Core
                           System.Globalization.CultureInfo.InvariantCulture)).Append(')');
                 sb.Append(" exec ").Append(r.ExecutedActionId);
             }
-            else if (r.IdleReason == "goal_met")
+            else if (r.Idle == IdleReason.GoalMet)
             {
                 sb.Append(" idle(goal_met ").Append(r.ReplanGoalId).Append(')');
             }

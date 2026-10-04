@@ -11,6 +11,7 @@ namespace Vibe.Core.Tests
     /// <summary>
     /// 模拟内核契约测试：tick 推进与日界换算、被动结算、键投影与效果写回、
     /// 结算倍率通道（DESIGN.md §4.3）、重规划触发（计划耗尽 / 前提失效 / 规则变更）、
+    /// 事件总线（事件契约 v1：字段与次序、推送与退订、事件流确定性、与行为日志同源）、
     /// 多 agent 顺序可见性、确定性（可复现），以及 M1 验收——内联镜像的 m1-scenario
     /// 配置跑满 24 游戏小时自主生存（盘上文件的等价性由 SimulationConfigTests 保障）。
     /// </summary>
@@ -390,6 +391,144 @@ namespace Vibe.Core.Tests
             sim.Dispose();
 
             Assert.DoesNotThrow(() => rules.Raise(), "退订后触发不应触及已释放的实例");
+        }
+
+        // ── 事件总线（事件契约 v1，DESIGN.md §4.4）──────────────
+
+        [Test]
+        public void Events_ReplanThenExecute_CarriesFieldsInOrder()
+        {
+            var actions = new List<IAction> { new StubAction("add", 1f, null, new[] { WorldEffect.Gain("flag", 1) }) };
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("flag", 1) }) };
+            var sim = new Simulation(World(null), actions, goals, MakeConfig("[]", AgentN1));
+            sim.Step();
+
+            Assert.AreEqual(2, sim.Events.Count, "重规划 + 执行 = 2 条");
+            var replan = sim.Events[0];
+            Assert.AreEqual(SimEventType.AgentReplanned, replan.Type);
+            Assert.AreEqual(1, replan.Tick);
+            Assert.AreEqual(1, replan.Day);
+            Assert.AreEqual("n1", replan.AgentId);
+            Assert.AreEqual("g", replan.GoalId);
+            Assert.AreEqual(1, replan.PlanSteps);
+            Assert.AreEqual(1f, replan.PlanCost);
+            Assert.IsNull(replan.ActionId, "ActionId 仅 AgentExecuted 有值");
+            Assert.AreEqual(IdleReason.None, replan.Idle);
+
+            var exec = sim.Events[1];
+            Assert.AreEqual(SimEventType.AgentExecuted, exec.Type);
+            Assert.AreEqual("n1", exec.AgentId);
+            Assert.AreEqual("add", exec.ActionId);
+            Assert.IsNull(exec.GoalId, "GoalId 仅 Replanned/GoalMet 有值");
+        }
+
+        [Test]
+        public void Events_IdleGoalMet_CarriesMetGoalId()
+        {
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("food", 1) }) };
+            var sim = new Simulation(World(new Dictionary<string, double> { ["food"] = 5 }),
+                new List<IAction>(), goals, MakeConfig("[]", AgentN1));
+            sim.Step();
+
+            var idle = sim.Events.Single();
+            Assert.AreEqual(SimEventType.AgentIdle, idle.Type);
+            Assert.AreEqual(IdleReason.GoalMet, idle.Idle);
+            Assert.AreEqual("g", idle.GoalId, "GoalMet 附已满足的目标 id");
+            Assert.IsNull(idle.ActionId);
+        }
+
+        [Test]
+        public void Events_IdleUnplannable_HasNoGoal()
+        {
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("gold", 1) }) };
+            var sim = new Simulation(World(null), new List<IAction>(), goals, MakeConfig("[]", AgentN1));
+            sim.Step();
+
+            var idle = sim.Events.Single();
+            Assert.AreEqual(SimEventType.AgentIdle, idle.Type);
+            Assert.AreEqual(IdleReason.Unplannable, idle.Idle);
+            Assert.IsNull(idle.GoalId, "重规划失败无目标可附");
+        }
+
+        [Test]
+        public void Events_DayBegin_AtBoundary_PrecedesAgentEventsOfThatTick()
+        {
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("food", 99) }) };
+            var sim = new Simulation(World(null), new List<IAction>(), goals, MakeConfig("[]", AgentN1, tph: 2));
+            sim.Run(48);
+
+            var dayEvents = sim.Events.Where(e => e.Type == SimEventType.DayBegin).ToList();
+            Assert.AreEqual(1, dayEvents.Count);
+            Assert.AreEqual(48, dayEvents[0].Tick, "日界事件记新 tick");
+            Assert.AreEqual(2, dayEvents[0].Day);
+
+            int idx = sim.Events.ToList().IndexOf(dayEvents[0]);
+            Assert.AreEqual(SimEventType.AgentIdle, sim.Events[idx + 1].Type,
+                "日界事件先于当日行为事件（次序与 Step 固定次序一致）");
+        }
+
+        [Test]
+        public void Events_PlansInvalidated_OnRulesChanged_BeforeReplan()
+        {
+            var actions = new List<IAction> { new StubAction("add", 1f, null, new[] { WorldEffect.Gain("flag", 1) }) };
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("flag", 2) }) };
+            var rules = new MutableRules();
+            var sim = new Simulation(World(null), actions, goals, MakeConfig("[]", AgentN1), rules: rules);
+            sim.Step();
+            rules.Raise();
+            sim.Step();
+
+            var t2 = sim.Events.Where(e => e.Tick == 2).ToList();
+            Assert.AreEqual(3, t2.Count, "作废 + 重规划 + 执行");
+            Assert.AreEqual(SimEventType.PlansInvalidated, t2[0].Type, "作废事件先于重规划");
+            Assert.AreEqual(SimEventType.AgentReplanned, t2[1].Type);
+            Assert.AreEqual(SimEventType.AgentExecuted, t2[2].Type);
+        }
+
+        [Test]
+        public void Emitted_PushesInAppendOrder_AndUnsubscribeStops()
+        {
+            var goals = new List<IGoal> { new StubGoal("g", 1f, new[] { WorldCondition.AtLeast("food", 99) }) };
+            var sim = new Simulation(World(null), new List<IAction>(), goals, MakeConfig("[]", AgentN1));
+
+            var pushed = new List<SimEvent>();
+            sim.Emitted += pushed.Add;
+            sim.Run(3);
+            Assert.AreEqual(3, sim.Events.Count);
+            Assert.IsTrue(pushed.SequenceEqual(sim.Events), "推送序 == 留存序");
+
+            sim.Emitted -= pushed.Add;
+            sim.Step();
+            Assert.AreEqual(4, sim.Events.Count, "留存继续增长");
+            Assert.AreEqual(3, pushed.Count, "退订后不再推送");
+        }
+
+        [Test]
+        public void SameInput_ProducesIdenticalEventStream()
+        {
+            var a = NewM1Simulation();
+            var b = NewM1Simulation();
+            a.Run(240);
+            b.Run(240);
+
+            Assert.IsTrue(a.Events.SequenceEqual(b.Events), "同输入同事件流（含 PlanCost 浮点，可复现）");
+        }
+
+        [Test]
+        public void M1Scenario_EventCounts_MatchBehaviorLog()
+        {
+            var sim = NewM1Simulation();
+            sim.Run(240);
+
+            Assert.AreEqual(1, sim.Events.Count(e => e.Type == SimEventType.DayBegin));
+            Assert.AreEqual(0, sim.Events.Count(e => e.Type == SimEventType.PlansInvalidated), "M1 无规则变更");
+            Assert.AreEqual(3, sim.Events.Count(e => e.Type == SimEventType.AgentExecuted && e.ActionId == "eat"));
+            Assert.AreEqual(4, sim.Events.Count(e => e.Type == SimEventType.AgentExecuted && e.ActionId == "gather_berries"));
+            Assert.AreEqual(3, sim.Events.Count(e => e.Type == SimEventType.AgentExecuted && e.ActionId == "chop_wood"));
+            Assert.AreEqual(230, sim.Events.Count(e => e.Type == SimEventType.AgentIdle));
+            Assert.AreEqual(240, sim.Events.Count(e =>
+                e.Type == SimEventType.AgentExecuted || e.Type == SimEventType.AgentIdle),
+                "每 NPC 每 tick 恰一个行为结局（执行或闲置）");
         }
 
         // ── M1 验收：1 NPC、3 Action、2 Goal 自主生存 24 游戏小时 ──

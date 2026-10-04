@@ -16,11 +16,12 @@ namespace Vibe.Core
 
         /// <summary>执行的行动 id；闲置为 null。</summary>
         public readonly string ExecutedActionId;
-        /// <summary>闲置原因（"goal_met"=最高可达目标已满足 / "unplannable"=全部目标不可达）；执行时为 null。</summary>
-        public readonly string IdleReason;
+        /// <summary>闲置原因（<see cref="IdleReason.GoalMet"/>=最高可达目标已满足 /
+        /// <see cref="IdleReason.Unplannable"/>=全部目标不可达）；执行时为 <see cref="IdleReason.None"/>。</summary>
+        public readonly IdleReason Idle;
 
         public AgentTickReport(bool replanned, string replanGoalId, int replanSteps, float replanCost,
-            bool replannedFromInvalidation, string executedActionId, string idleReason)
+            bool replannedFromInvalidation, string executedActionId, IdleReason idle)
         {
             Replanned = replanned;
             ReplanGoalId = replanGoalId;
@@ -28,7 +29,7 @@ namespace Vibe.Core
             ReplanCost = replanCost;
             ReplannedFromInvalidation = replannedFromInvalidation;
             ExecutedActionId = executedActionId;
-            IdleReason = idleReason;
+            Idle = idle;
         }
     }
 
@@ -112,14 +113,14 @@ namespace Vibe.Core
                 replanned = true;
 
                 if (_plan == null)
-                    return new AgentTickReport(true, null, 0, 0f, true, null, "unplannable");
+                    return new AgentTickReport(true, null, 0, 0f, true, null, IdleReason.Unplannable);
                 if (_plan.Steps.Count == 0)
                 {
                     // 全部目标已满足（空步计划）：本 tick 闲置且不留存计划——
                     // 被动结算每 tick 都在改变世界，下一 tick 重新感知
                     string metGoalId = _plan.Goal.Id;
                     _plan = null;
-                    return new AgentTickReport(true, metGoalId, 0, 0f, true, null, "goal_met");
+                    return new AgentTickReport(true, metGoalId, 0, 0f, true, null, IdleReason.GoalMet);
                 }
                 replanGoalId = _plan.Goal.Id;
                 replanSteps = _plan.Steps.Count;
@@ -129,7 +130,7 @@ namespace Vibe.Core
             var step = _plan.Steps[_pendingIndex++];
             ApplySettledEffects(world, step.Effects, rules);
             return new AgentTickReport(replanned, replanGoalId, replanSteps, replanCost,
-                fromInvalidation, step.Id, null);
+                fromInvalidation, step.Id, IdleReason.None);
         }
 
         /// <summary>
